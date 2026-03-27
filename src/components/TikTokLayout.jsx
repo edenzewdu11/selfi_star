@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { CommentSection } from "./CommentSection";
 
 const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
 
@@ -7,11 +8,14 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
   const [activeTab, setActiveTab] = useState("foryou");
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showComments, setShowComments] = useState(null);
 
   const fetchVideos = async () => {
     try {
       setLoading(true);
+      console.log("Fetching videos from API...");
       const reelsData = await api.getReels();
+      console.log("API response:", reelsData);
       // Transform backend data to match frontend format
       const formattedVideos = reelsData.map(reel => ({
         id: reel.id,
@@ -20,10 +24,11 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
         avatar: "👤", // Default avatar, could be updated based on user profile
         caption: reel.caption,
         likes: reel.votes || 0,
-        comments: 0, // Backend doesn't have comments count yet
+        comments: reel.comment_count || 0, // Will be updated from backend
         shares: 0, // Backend doesn't have shares count yet
         imageUrl: reel.image, // Add image URL for displaying actual content
       }));
+      console.log("Formatted videos:", formattedVideos);
       setVideos(formattedVideos);
     } catch (error) {
       console.error("Failed to fetch videos:", error);
@@ -197,6 +202,43 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
             {activeTab === "inbox" && "Inbox"}
             {activeTab === "bookmarks" && "Bookmarks"}
           </div>
+          <button
+            onClick={() => {
+              console.log("Test API call...");
+              fetch('http://localhost:8000/api/reels/')
+                .then(response => response.json())
+                .then(data => console.log("Direct API call result:", data))
+                .catch(error => console.error("Direct API call error:", error));
+            }}
+            style={{
+              padding: "4px 8px",
+              background: T.pri,
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              fontSize: 12,
+              cursor: "pointer",
+              marginTop: 8,
+              marginRight: 8,
+            }}
+          >
+            Test API
+          </button>
+          <button
+            onClick={fetchVideos}
+            style={{
+              padding: "4px 8px",
+              background: "#28a745",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              fontSize: 12,
+              cursor: "pointer",
+              marginTop: 8,
+            }}
+          >
+            Refresh Feed
+          </button>
         </div>
 
         {/* Videos Feed */}
@@ -228,7 +270,7 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
               {/* Video/Image Background */}
               {video.imageUrl ? (
                 <img
-                  src={`http://localhost:8000${video.imageUrl}`}
+                  src={video.imageUrl.startsWith('http') ? video.imageUrl : `http://localhost:8000${video.imageUrl}`}
                   alt={video.caption}
                   style={{
                     width: "100%",
@@ -322,16 +364,18 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
                   <div style={{ fontSize: 32 }}>🤍</div>
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{video.likes}</div>
                 </button>
-                <button style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 4,
-                  color: "#fff",
-                }}>
+                <button 
+                  onClick={() => setShowComments(video.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 4,
+                    color: "#fff",
+                  }}>
                   <div style={{ fontSize: 32 }}>💬</div>
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{video.comments}</div>
                 </button>
@@ -472,6 +516,15 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
           </div>
         </div>
       </div>
+
+      {/* Comments Modal */}
+      {showComments && (
+        <CommentSection
+          reelId={showComments}
+          user={user}
+          onClose={() => setShowComments(null)}
+        />
+      )}
     </div>
   );
 }

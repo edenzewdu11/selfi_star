@@ -29,6 +29,18 @@ class Reel(models.Model):
     def __str__(self):
         return f"Reel by {self.user.username}"
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.reel.id}"
+
 class Vote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name='reel_votes')

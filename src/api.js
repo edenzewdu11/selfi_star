@@ -115,6 +115,15 @@ const api = {
       method: 'POST',
     }),
 
+  postComment: (reelId, text) =>
+    api.request(`/reels/${reelId}/comments/`, {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }),
+
+  getComments: (reelId) =>
+    api.request(`/reels/${reelId}/comments/`),
+
   // Quests
   getQuests: () => api.request('/quests/'),
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile, Reel, Vote, Quest, UserQuest, Subscription, NotificationPreference
+from .models import UserProfile, Reel, Comment, Vote, Quest, UserQuest, Subscription, NotificationPreference
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,10 +16,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class ReelSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    comment_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Reel
-        fields = ['id', 'user', 'image', 'caption', 'votes', 'created_at']
+        fields = ['id', 'user', 'image', 'caption', 'votes', 'comment_count', 'created_at']
+    
+    def get_comment_count(self, obj):
+        return obj.comments.count()
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'reel', 'text', 'created_at']
 
 class VoteSerializer(serializers.ModelSerializer):
     class Meta:

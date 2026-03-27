@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import UserProfile, Reel, Vote, Quest, UserQuest, Subscription, NotificationPreference
+from .models import UserProfile, Reel, Comment, Vote, Quest, UserQuest, Subscription, NotificationPreference
 from .serializers import (
-    UserSerializer, UserProfileSerializer, ReelSerializer, VoteSerializer,
+    UserSerializer, UserProfileSerializer, ReelSerializer, CommentSerializer, VoteSerializer,
     QuestSerializer, UserQuestSerializer, SubscriptionSerializer,
     NotificationPreferenceSerializer, RegisterSerializer
 )
@@ -154,6 +154,31 @@ class ReelViewSet(viewsets.ModelViewSet):
             reel.votes -= 1
             reel.save()
             return Response({'voted': False, 'votes': reel.votes})
+    
+    @action(detail=True, methods=['get', 'post'])
+    def comments(self, request, pk=None):
+        reel = self.get_object()
+        
+        if request.method == 'GET':
+            comments = Comment.objects.filter(reel=reel)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+        elif request.method == 'POST':
+            if not request.user.is_authenticated:
+                return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            text = request.data.get('text', '').strip()
+            if not text:
+                return Response({'error': 'Comment text is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            comment = Comment.objects.create(
+                user=request.user,
+                reel=reel,
+                text=text
+            )
+            
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class QuestViewSet(viewsets.ModelViewSet):
     queryset = Quest.objects.filter(is_active=True)
