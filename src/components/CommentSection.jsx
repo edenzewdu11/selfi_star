@@ -3,7 +3,7 @@ import api from "../api";
 
 const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
 
-export function CommentSection({ reelId, user, onClose }) {
+export function CommentSection({ reelId, user, onClose, onCommentPosted }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,11 @@ export function CommentSection({ reelId, user, onClose }) {
       // Add the new comment to the list
       setComments(prev => [response, ...prev]);
       setNewComment("");
+      
+      // Notify parent component that a comment was posted
+      if (onCommentPosted) {
+        onCommentPosted(response);
+      }
     } catch (error) {
       console.error("Failed to post comment:", error);
       alert("Failed to post comment. Please try again.");

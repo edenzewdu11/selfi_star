@@ -27,6 +27,7 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
         comments: reel.comment_count || 0, // Will be updated from backend
         shares: 0, // Backend doesn't have shares count yet
         imageUrl: reel.image, // Add image URL for displaying actual content
+        liked: false, // Track if current user liked this video
       }));
       console.log("Formatted videos:", formattedVideos);
       setVideos(formattedVideos);
@@ -40,6 +41,40 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
       ]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCommentPosted = (comment) => {
+    // Update the comment count for the specific video
+    setVideos(prev => prev.map(video => 
+      video.id === comment.reel 
+        ? { ...video, comments: video.comments + 1 }
+        : video
+    ));
+  };
+
+  const handleLike = async (videoId) => {
+    if (!user) {
+      alert("Please login to like videos");
+      return;
+    }
+
+    try {
+      const response = await api.voteReel(videoId);
+      
+      // Update the video in state
+      setVideos(prev => prev.map(video => 
+        video.id === videoId 
+          ? { 
+              ...video, 
+              likes: response.votes,
+              liked: response.voted 
+            }
+          : video
+      ));
+    } catch (error) {
+      console.error("Failed to like video:", error);
+      alert("Failed to like video. Please try again.");
     }
   };
 
@@ -351,17 +386,19 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
                 flexDirection: "column",
                 gap: 16,
               }}>
-                <button style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 4,
-                  color: "#fff",
-                }}>
-                  <div style={{ fontSize: 32 }}>🤍</div>
+                <button 
+                  onClick={() => handleLike(video.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 4,
+                    color: "#fff",
+                  }}>
+                  <div style={{ fontSize: 32 }}>{video.liked ? "❤️" : "🤍"}</div>
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{video.likes}</div>
                 </button>
                 <button 
@@ -523,6 +560,7 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
           reelId={showComments}
           user={user}
           onClose={() => setShowComments(null)}
+          onCommentPosted={handleCommentPosted}
         />
       )}
     </div>
