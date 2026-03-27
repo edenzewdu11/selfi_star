@@ -130,7 +130,7 @@ class ReelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]  # Allow anyone to view reels
     
     def get_permissions(self):
-        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update' or self.action == 'destroy':
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'vote', 'comments']:
             self.permission_classes = [IsAuthenticated]  # Require auth for modifying operations
         return super().get_permissions()
     

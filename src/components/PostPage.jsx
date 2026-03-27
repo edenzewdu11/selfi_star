@@ -21,6 +21,34 @@ export function PostPage({ user, onBack }) {
     }
   };
 
+  const handleTestPost = async () => {
+    console.log("Testing post without file...");
+    try {
+      // Create a simple text file for testing
+      const testBlob = new Blob(['test content'], { type: 'text/plain' });
+      const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
+      
+      const formData = new FormData();
+      formData.append("file", testFile);
+      formData.append("caption", "Test post");
+      
+      console.log("Test FormData created");
+      const response = await api.createPost(formData);
+      console.log("Test post successful:", response);
+      
+      alert("Test post successful!");
+      
+      if (window.refreshFeed) {
+        window.refreshFeed();
+      }
+      
+      onBack();
+    } catch (error) {
+      console.error("Test post error:", error);
+      alert("Test post failed: " + JSON.stringify(error));
+    }
+  };
+
   const handlePost = async () => {
     if (!selectedFile) {
       alert("Please select a video or image to post");
@@ -96,6 +124,22 @@ export function PostPage({ user, onBack }) {
           Create Post
         </div>
         <div style={{ flex: 1 }} />
+        <button
+          onClick={handleTestPost}
+          style={{
+            background: "#28a745",
+            border: "none",
+            borderRadius: 20,
+            color: "#fff",
+            padding: "12px 24px",
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: "pointer",
+            marginRight: 8,
+          }}
+        >
+          Test Post
+        </button>
         <button
           onClick={handlePost}
           disabled={!selectedFile || isUploading}
