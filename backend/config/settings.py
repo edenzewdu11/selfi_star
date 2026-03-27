@@ -112,3 +112,9 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+# File upload settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
+FILE_UPLOAD_MAX_SIZE = 50 * 1024 * 1024  # 50MB
+DATA_UPLOAD_MAX_SIZE = 50 * 1024 * 1024  # 50MB

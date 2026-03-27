@@ -96,19 +96,31 @@ const api = {
       body: formData,
     }).then(r => r.json()),
 
-  createPost: (formData) =>
-    fetch(`${API_BASE_URL}/posts/create/`, {
+  createPost: (formData) => {
+    console.log("createPost called with FormData:");
+    console.log("FormData entries:");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+    console.log("Auth token:", authToken);
+    
+    return fetch(`${API_BASE_URL}/posts/create/`, {
       method: 'POST',
       headers: {
         'Authorization': `Token ${authToken}`,
       },
       body: formData,
     }).then(r => {
+      console.log("API response status:", r.status);
       if (!r.ok) {
-        return r.json().then(err => Promise.reject(err));
+        return r.json().then(err => {
+          console.error("API error response:", err);
+          return Promise.reject(err);
+        });
       }
       return r.json();
-    }),
+    })
+  },
 
   voteReel: (reelId) =>
     api.request(`/reels/${reelId}/vote/`, {

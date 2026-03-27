@@ -30,11 +30,17 @@ export function PostPage({ user, onBack }) {
     setIsUploading(true);
     
     try {
+      console.log("Starting post upload...");
+      console.log("Selected file:", selectedFile);
+      console.log("Caption:", caption);
+      
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("caption", caption);
-
+      
+      console.log("FormData created, calling API...");
       const response = await api.createPost(formData);
+      console.log("API response:", response);
       
       alert("Post uploaded successfully!");
       
@@ -46,6 +52,7 @@ export function PostPage({ user, onBack }) {
       onBack();
     } catch (error) {
       console.error("Upload error:", error);
+      console.error("Error details:", JSON.stringify(error, null, 2));
       const errorMessage = typeof error === 'string' ? JSON.parse(error).error : error.message || 'Failed to upload post. Please try again.';
       alert(errorMessage);
     } finally {
