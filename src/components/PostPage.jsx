@@ -37,6 +37,12 @@ export function PostPage({ user, onBack }) {
       const response = await api.createPost(formData);
       
       alert("Post uploaded successfully!");
+      
+      // Refresh the feed to show the new post
+      if (window.refreshFeed) {
+        window.refreshFeed();
+      }
+      
       onBack();
     } catch (error) {
       console.error("Upload error:", error);

@@ -1,14 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api";
 
 const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
 
 export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) {
   const [activeTab, setActiveTab] = useState("foryou");
-  const [videos, setVideos] = useState([
-    { id: 1, creator: "Sarah Creator", handle: "sarahcreator", avatar: "👩", caption: "Just finished my morning workout! 💪", likes: 1234, comments: 89, shares: 45 },
-    { id: 2, creator: "Tech Guru", handle: "techguru", avatar: "👨", caption: "New iPhone 15 Pro Max unboxing! 📱", likes: 5678, comments: 234, shares: 123 },
-    { id: 3, creator: "Cooking with Love", handle: "cookingwithlove", avatar: "👩‍🍳", caption: "Easy 5-minute pasta recipe 🍝", likes: 3456, comments: 156, shares: 78 },
-  ]);
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchVideos = async () => {
+    try {
+      setLoading(true);
+      const reelsData = await api.getReels();
+      // Transform backend data to match frontend format
+      const formattedVideos = reelsData.map(reel => ({
+        id: reel.id,
+        creator: reel.user?.username || "Unknown User",
+        handle: `@${reel.user?.username || "unknown"}`,
+        avatar: "👤", // Default avatar, could be updated based on user profile
+        caption: reel.caption,
+        likes: reel.votes || 0,
+        comments: 0, // Backend doesn't have comments count yet
+        shares: 0, // Backend doesn't have shares count yet
+        imageUrl: reel.image, // Add image URL for displaying actual content
+      }));
+      setVideos(formattedVideos);
+    } catch (error) {
+      console.error("Failed to fetch videos:", error);
+      // Fallback to static data if API fails
+      setVideos([
+        { id: 1, creator: "Sarah Creator", handle: "sarahcreator", avatar: "👩", caption: "Just finished my morning workout! 💪", likes: 1234, comments: 89, shares: 45 },
+        { id: 2, creator: "Tech Guru", handle: "techguru", avatar: "👨", caption: "New iPhone 15 Pro Max unboxing! 📱", likes: 5678, comments: 234, shares: 123 },
+        { id: 3, creator: "Cooking with Love", handle: "cookingwithlove", avatar: "👩‍🍳", caption: "Easy 5-minute pasta recipe 🍝", likes: 3456, comments: 156, shares: 78 },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  // Expose fetchVideos function so it can be called from parent
+  useEffect(() => {
+    if (window.refreshFeed) {
+      window.refreshFeed = fetchVideos;
+    }
+  }, [fetchVideos]);
 
   const recommendations = [
     { id: 1, name: "Sarah Creator", handle: "@sarahcreator", avatar: "👩", followers: "1.2M" },
@@ -162,7 +201,16 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
 
         {/* Videos Feed */}
         <div style={{ width: "100%", maxWidth: 600, display: "flex", flexDirection: "column", gap: 20, padding: "0 20px" }}>
-          {videos.map(video => (
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "40px", color: T.sub }}>
+              Loading videos...
+            </div>
+          ) : videos.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px", color: T.sub }}>
+              No videos yet. Be the first to post!
+            </div>
+          ) : (
+            videos.map(video => (
             <div
               key={video.id}
               style={{
@@ -177,12 +225,28 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
                 justifyContent: "center",
               }}
             >
-              {/* Video Background */}
+              {/* Video/Image Background */}
+              {video.imageUrl ? (
+                <img
+                  src={`http://localhost:8000${video.imageUrl}`}
+                  alt={video.caption}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
+                  }}
+                />
+              ) : null}
               <div style={{
                 width: "100%",
                 height: "100%",
                 background: "linear-gradient(135deg, #1a1a1a, #2a2a2a)",
-                display: "flex",
+                display: video.imageUrl ? "none" : "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 80,
@@ -298,7 +362,8 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
                 </button>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 

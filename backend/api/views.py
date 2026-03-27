@@ -127,7 +127,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class ReelViewSet(viewsets.ModelViewSet):
     queryset = Reel.objects.all()
     serializer_class = ReelSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Allow anyone to view reels
+    
+    def get_permissions(self):
+        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update' or self.action == 'destroy':
+            self.permission_classes = [IsAuthenticated]  # Require auth for modifying operations
+        return super().get_permissions()
     
     def get_queryset(self):
         return Reel.objects.all().order_by('-created_at')
