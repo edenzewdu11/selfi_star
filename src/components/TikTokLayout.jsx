@@ -26,7 +26,7 @@ export function TikTokLayout({ user, onLogout, onRequireAuth, onShowPostPage }) 
         likes: reel.votes || 0,
         comments: reel.comment_count || 0, // Will be updated from backend
         shares: 0, // Backend doesn't have shares count yet
-        imageUrl: reel.image, // Add image URL for displaying actual content
+        imageUrl: reel.media || reel.image, // Use media if available, fallback to image
         liked: false, // Track if current user liked this video
       }));
       console.log("Formatted videos:", formattedVideos);

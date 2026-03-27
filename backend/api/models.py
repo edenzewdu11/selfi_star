@@ -19,6 +19,7 @@ class UserProfile(models.Model):
 class Reel(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reels')
     image = models.ImageField(upload_to='reels/')
+    media = models.FileField(upload_to='reels/', null=True, blank=True)  # Add as nullable first
     caption = models.TextField(blank=True)
     votes = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

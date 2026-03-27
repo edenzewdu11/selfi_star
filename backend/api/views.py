@@ -66,7 +66,7 @@ def create_post(request):
         # Create the reel
         reel = Reel.objects.create(
             user=request.user,
-            image=file,
+            media=file,  # Use media field for new uploads
             caption=caption
         )
         

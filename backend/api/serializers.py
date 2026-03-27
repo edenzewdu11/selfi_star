@@ -20,7 +20,7 @@ class ReelSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Reel
-        fields = ['id', 'user', 'image', 'caption', 'votes', 'comment_count', 'created_at']
+        fields = ['id', 'user', 'image', 'media', 'caption', 'votes', 'comment_count', 'created_at']
     
     def get_comment_count(self, obj):
         return obj.comments.count()
