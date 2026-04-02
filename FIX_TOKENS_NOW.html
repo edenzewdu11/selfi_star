@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 CRITICAL TOKEN FIX</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .alert {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ffeaa7;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px;
+            width: 100%;
+        }
+        button:hover {
+            background: #c82333;
+        }
+        .step {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .token-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 CRITICAL: TOKEN CONFUSION DETECTED</h1>
+        
+        <div class="alert">
+            <strong>⚠️ PROBLEM:</strong> Your demo account is showing as admin because of token confusion in browser localStorage.
+        </div>
+
+        <div class="step">
+            <h3>🔥 IMMEDIATE FIX REQUIRED:</h3>
+            <p>Your browser has stale admin tokens that are being used instead of demo tokens.</p>
+        </div>
+
+        <button onclick="forceClearAll()">🗑️ FORCE CLEAR ALL TOKENS NOW</button>
+        <button onclick="manualClearInstructions()">📋 MANUAL CLEAR INSTRUCTIONS</button>
+
+        <div id="status"></div>
+        <div id="tokenInfo" class="token-info"></div>
+
+        <div class="warning">
+            <h3>⚠️ WHY THIS HAPPENS:</h3>
+            <ul>
+                <li>You logged in as admin, then as demo without clearing tokens</li>
+                <li>Browser is using old admin tokens for demo requests</li>
+                <li>Backend correctly identifies the user, but frontend shows wrong name</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h3>✅ AFTER CLEARING TOKENS:</h3>
+            <ol>
+                <li>Go to main app: <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></li>
+                <li>Login as demo: demo@example.com / demo12345</li>
+                <li>Posts and messages will show as from "demo", not "admin"</li>
+                <li>Test messaging with dere - it will work correctly</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔍 PREVENTION:</h3>
+            <ul>
+                <li>Always clear tokens when switching between admin and demo</li>
+                <li>Use separate browser profiles for admin vs demo testing</li>
+                <li>Never log in as admin and then demo in same session</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('status');
+            if (type === 'success') {
+                statusDiv.className = 'success';
+            } else if (type === 'warning') {
+                statusDiv.className = 'warning';
+            } else {
+                statusDiv.className = 'alert';
+            }
+            statusDiv.innerHTML = message;
+        }
+
+        function checkTokens() {
+            const tokenInfo = document.getElementById('tokenInfo');
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const user = localStorage.getItem('user');
+            
+            let info = '🔍 CURRENT TOKENS:\n';
+            info += `authToken: ${authToken ? authToken.substring(0, 20) + '...' : 'NULL'}\n`;
+            info += `adminToken: ${adminToken ? adminToken.substring(0, 20) + '...' : 'NULL'}\n`;
+            info += `user: ${user ? JSON.parse(user).username || 'data' : 'NULL'}\n`;
+            
+            // Check all localStorage items
+            info += '\n📋 ALL LOCALSTORAGE ITEMS:\n';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                info += `${key}: ${value ? value.substring(0, 30) + '...' : 'NULL'}\n`;
+            }
+            
+            tokenInfo.textContent = info;
+            
+            // Check for token conflicts
+            if (authToken && adminToken && authToken === adminToken) {
+                showStatus('🚨 CRITICAL: authToken and adminToken are IDENTICAL! This is the exact cause of the issue.', 'error');
+                return true;
+            } else if (authToken && !adminToken) {
+                showStatus('✅ Good: Only authToken exists', 'success');
+                return false;
+            } else if (!authToken && adminToken) {
+                showStatus('⚠️ Warning: Only adminToken exists', 'warning');
+                return true;
+            } else if (!authToken && !adminToken) {
+                showStatus('✅ Perfect: No tokens found (clean slate)', 'success');
+                return false;
+            } else {
+                showStatus('⚠️ Both tokens exist but are different', 'warning');
+                return true;
+            }
+        }
+
+        function forceClearAll() {
+            console.log('🔥 FORCE CLEARING ALL TOKENS...');
+            
+            // Clear ALL localStorage items
+            const itemsToClear = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                itemsToClear.push(localStorage.key(i));
+            }
+            
+            itemsToClear.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`🗑️ Cleared: ${key}`);
+            });
+            
+            // Also clear sessionStorage
+            sessionStorage.clear();
+            console.log('🗑️ Cleared sessionStorage');
+            
+            showStatus('✅ ALL TOKENS CLEARED! Browser is now clean.', 'success');
+            
+            // Check tokens after clearing
+            setTimeout(() => {
+                const hasIssues = checkTokens();
+                if (!hasIssues) {
+                    showStatus('✅ PERFECT! Browser is completely clean. Ready to login as demo.', 'success');
+                }
+            }, 100);
+        }
+
+        function manualClearInstructions() {
+            showStatus('📋 MANUAL CLEAR INSTRUCTIONS:', 'warning');
+            const instructions = `
+📋 MANUAL CLEAR INSTRUCTIONS:
+
+1. Press F12 to open Developer Tools
+2. Go to Application tab
+3. Click Local Storage in the left menu
+4. Select your site (localhost:5173)
+5. Delete ALL items:
+   - authToken
+   - adminToken
+   - user
+   - Any other items
+
+OR:
+
+1. Press Ctrl+Shift+Delete
+2. Select "All time"
+3. Check "Cookies and other site data"
+4. Click "Clear data"
+
+Then:
+1. Go to http://localhost:5173
+2. Login as demo: demo@example.com / demo12345
+3. Test posting and messaging
+            `;
+            document.getElementById('tokenInfo').textContent = instructions;
+        }
+
+        // Check tokens on page load
+        window.onload = function() {
+            checkTokens();
+        };
+    </script>
+</body>
+</html>

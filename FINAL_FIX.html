@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FINAL FIX - Admin Token Issue</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .critical { background: #ff4444; color: white; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .success { background: #44ff44; color: black; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .warning { background: #ffaa44; color: black; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        button { padding: 15px 30px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .red { background: #ff4444; color: white; }
+        .green { background: #44ff44; color: black; }
+        .blue { background: #4444ff; color: white; }
+        pre { background: #f0f0f0; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 FINAL FIX - Admin Token Issue</h1>
+        
+        <div class="critical">
+            <h2>🚨 CRITICAL ISSUE IDENTIFIED</h2>
+            <p>Your frontend is using an <strong>admin token</strong> instead of the demo user token when sending messages.</p>
+            <p>This causes messages to appear as if they're sent by "admin" instead of the demo user.</p>
+        </div>
+
+        <button onclick="runFullReset()" class="red">🔥 RUN FULL RESET - THIS WILL FIX EVERYTHING</button>
+        <button onclick="diagnose()">🔍 Diagnose Current State</button>
+        <button onclick="testBackend()" class="blue">🧪 Test Backend Directly</button>
+
+        <div id="result"></div>
+
+        <div class="warning">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li><strong>Click "RUN FULL RESET"</strong> - This clears all tokens and forces fresh authentication</li>
+                <li><strong>Refresh your app</strong> - Go back to your main application</li>
+                <li><strong>Login as demo user</strong>:<br>
+                   Email: <code>demo@example.com</code><br>
+                   Password: <code>demo12345</code></li>
+                <li><strong>Test messaging</strong> - Send a message and verify it shows as from "demo", not "admin"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function diagnose() {
+            const result = document.getElementById('result');
+            
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const user = localStorage.getItem('user');
+            
+            let html = '<h2>🔍 Current Diagnosis:</h2>';
+            
+            // Token analysis
+            html += '<h3>Token Analysis:</h3>';
+            html += `<p><strong>authToken:</strong> ${authToken ? 'EXISTS (' + authToken.substring(0, 30) + '...)' : 'NONE'}</p>`;
+            html += `<p><strong>adminToken:</strong> ${adminToken ? '⚠️ EXISTS (' + adminToken.substring(0, 30) + '...)' : '✅ NONE'}</p>`;
+            
+            // User analysis
+            html += '<h3>User Analysis:</h3>';
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    html += `<p><strong>Current user:</strong> ${userData.username} (ID: ${userData.id})</p>`;
+                    if (userData.username === 'admin') {
+                        html += '<p class="critical">🚨 YOU ARE LOGGED IN AS ADMIN! This is the problem!</p>';
+                    } else if (userData.username === 'demo') {
+                        html += '<p class="success">✅ You are logged in as demo user</p>';
+                    }
+                } catch (e) {
+                    html += '<p class="warning">⚠️ User data is corrupted</p>';
+                }
+            } else {
+                html += '<p>No user data found</p>';
+            }
+            
+            // Cookie analysis
+            html += '<h3>Cookie Analysis:</h3>';
+            html += `<pre>${document.cookie || 'No cookies'}</pre>`;
+            
+            result.innerHTML = html;
+        }
+        
+        function runFullReset() {
+            if (!confirm('⚠️ This will completely reset your authentication. You will need to login again. Continue?')) {
+                return;
+            }
+            
+            const result = document.getElementById('result');
+            result.innerHTML = '<h2>🔥 Running Full Reset...</h2>';
+            
+            // Step 1: Clear localStorage completely
+            localStorage.clear();
+            result.innerHTML += '<p>✅ LocalStorage cleared</p>';
+            
+            // Step 2: Clear sessionStorage
+            sessionStorage.clear();
+            result.innerHTML += '<p>✅ SessionStorage cleared</p>';
+            
+            // Step 3: Clear all cookies
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=localhost;path=/";
+            }
+            result.innerHTML += '<p>✅ All cookies cleared</p>';
+            
+            // Step 4: Verify cleanup
+            setTimeout(() => {
+                const remainingAuth = localStorage.getItem('authToken');
+                const remainingAdmin = localStorage.getItem('adminToken');
+                
+                if (!remainingAuth && !remainingAdmin) {
+                    result.innerHTML = `
+                        <div class="success">
+                            <h2>✅ FULL RESET COMPLETE!</h2>
+                            <p>All authentication data has been cleared.</p>
+                            <h3>Next Steps:</h3>
+                            <ol>
+                                <li>Close this tab</li>
+                                <li>Go back to your main application</li>
+                                <li>Login as demo user (demo@example.com / demo12345)</li>
+                                <li>Test sending a message - it should now show as from "demo", not "admin"</li>
+                            </ol>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <div class="warning">
+                            <h2>⚠️ Some tokens remain</h2>
+                            <p>You may need to clear browser data manually or use incognito mode.</p>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        }
+        
+        function testBackend() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<h2>🧪 Testing Backend Authentication...</h2>';
+            
+            // Test demo login
+            fetch('http://localhost:8000/api/auth/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: 'demo@example.com',
+                    password: 'demo12345'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    result.innerHTML = `
+                        <div class="success">
+                            <h2>✅ Backend Demo Login Works!</h2>
+                            <p><strong>User:</strong> ${data.user.username} (ID: ${data.user.id})</p>
+                            <p><strong>Token:</strong> ${data.token.substring(0, 20)}...</p>
+                            <p>The backend is working correctly. The issue is frontend token contamination.</p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <div class="critical">
+                            <h2>❌ Backend Demo Login Failed!</h2>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                result.innerHTML = `
+                    <div class="critical">
+                        <h2>❌ Backend Connection Error!</h2>
+                        <p>${error.message}</p>
+                        <p>Make sure the Django server is running on localhost:8000</p>
+                    </div>
+                `;
+            });
+        }
+        
+        // Auto-diagnose on load
+        window.onload = diagnose;
+    </script>
+</body>
+</html>

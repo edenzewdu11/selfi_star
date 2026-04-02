@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { contentFilter } from "../utils/contentFilter";
 
 const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4", red:"#EF4444" };
 
@@ -10,13 +11,31 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
   const [err, setErr] = useState("");
   const fileInputRef = useRef(null);
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file first
+      const fileValidation = contentFilter.validateFile(file);
+      if (!fileValidation.isValid) {
+        setErr(fileValidation.reason);
+        return;
+      }
+
       setImage(file);
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         setPreview(event.target?.result);
+        
+        // Auto-filter content when image is loaded
+        if (caption.trim()) {
+          const filterResult = await contentFilter.filterContent(file, caption);
+          if (!filterResult.isAppropriate) {
+            setErr(`Content blocked: ${filterResult.reasons.join(', ')}`);
+            setImage(null);
+            setPreview(null);
+            return;
+          }
+        }
       };
       reader.readAsDataURL(file);
       setErr("");
@@ -31,6 +50,13 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
 
     setLoading(true);
     try {
+      // Final content check before upload
+      const filterResult = await contentFilter.filterContent(image, caption);
+      if (!filterResult.isAppropriate) {
+        setErr(`Content blocked: ${filterResult.reasons.join(', ')}`);
+        return;
+      }
+
       // Create a mock video object
       const mockVideo = {
         id: Math.floor(Math.random() * 10000),
@@ -43,10 +69,12 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
         shares: 0,
         image: preview,
         liked: false,
-        bookmarked: false
+        bookmarked: false,
+        contentFiltered: true,
+        filterConfidence: filterResult.confidence
       };
 
-      console.log("Video created:", mockVideo);
+      console.log("Video created and filtered:", mockVideo);
       
       // Call the callback with the new video
       onVideoCreated?.(mockVideo);
@@ -62,29 +90,51 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
   };
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: "rgba(0,0,0,0.7)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 2000,
-    }}>
+    <>
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "rgba(0,0,0,0.8)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 2000,
+        backdropFilter: "blur(8px)",
+        animation: "fadeIn 0.3s ease-out",
+      }}>
       <div style={{
         background: "#fff",
-        borderRadius: 16,
-        padding: 24,
-        maxWidth: 500,
+        borderRadius: 20,
+        padding: 32,
+        maxWidth: 520,
         width: "90%",
         maxHeight: "90vh",
         overflowY: "auto",
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        border: `1px solid ${T.border}`,
+        animation: "slideUp 0.4s ease-out",
+        position: "relative",
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: T.txt }}>Create Video 📹</div>
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          marginBottom: 24,
+          paddingBottom: 16,
+          borderBottom: `2px solid ${T.border}`,
+        }}>
+          <div style={{ 
+            fontSize: 24, 
+            fontWeight: 900, 
+            color: T.txt,
+            background: `linear-gradient(135deg, ${T.txt}, ${T.pri})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}>Create Video 📹</div>
           <button
             onClick={onClose}
             style={{
@@ -197,14 +247,65 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
         {/* Error Message */}
         {err && (
           <div style={{
-            background: "#FEE2E2",
-            borderRadius: 10,
-            padding: 12,
-            fontSize: 12,
+            background: `linear-gradient(135deg, #FEE2E2, #FECACA)`,
+            borderRadius: 16,
+            padding: 20,
+            fontSize: 14,
             color: T.red,
             marginBottom: 16,
+            border: `2px solid ${T.red}30`,
+            boxShadow: `0 8px 16px ${T.red}15`,
+            position: "relative",
+            overflow: "hidden",
           }}>
-            ⚠️ {err}
+            {/* Decorative warning icon in corner */}
+            <div style={{
+              position: "absolute",
+              top: -10,
+              right: -10,
+              width: 60,
+              height: 60,
+              background: `${T.red}20`,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 24,
+            }}>
+              🚫
+            </div>
+            
+            {/* Content */}
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{
+                fontSize: 16,
+                fontWeight: 800,
+                marginBottom: 8,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}>
+                <span style={{ fontSize: 20 }}>⚠️</span>
+                ILLEGAL CONTENT DETECTED
+              </div>
+              <div style={{
+                fontSize: 13,
+                lineHeight: 1.5,
+                opacity: 0.9,
+              }}>
+                {err}
+              </div>
+            </div>
+            
+            {/* Decorative bottom border */}
+            <div style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 4,
+              background: `linear-gradient(90deg, ${T.red}, ${T.red}60, ${T.red})`,
+            }} />
           </div>
         )}
 
@@ -247,5 +348,29 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
         </div>
       </div>
     </div>
+      
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+      `}</style>
+    </>
   );
 }

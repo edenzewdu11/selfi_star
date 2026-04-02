@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Authentication Tokens</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #DA9B2A;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: #DA9B2A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #B8821E;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .token-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .steps {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        .steps ol {
+            margin: 10px 0;
+        }
+        .steps li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Fix Authentication Token Issue</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Problem Detected:</strong> Demo user posts are showing as from admin due to token confusion in browser localStorage.
+        </div>
+
+        <div class="steps">
+            <h3>📋 What This Tool Does:</h3>
+            <ol>
+                <li>Clears all authentication tokens from localStorage</li>
+                <li>Clears any admin tokens that might interfere</li>
+                <li>Provides a clean slate for proper authentication</li>
+                <li>Redirects you to login with the correct user context</li>
+            </ol>
+        </div>
+
+        <div id="status"></div>
+        
+        <button onclick="clearTokens()">🗑️ Clear All Tokens</button>
+        <button onclick="checkTokens()">🔍 Check Current Tokens</button>
+        <button onclick="goToLogin()">🚀 Go to Login</button>
+
+        <div id="tokenInfo" class="token-info" style="display: none;"></div>
+
+        <div class="steps">
+            <h3>🔄 After Clearing Tokens:</h3>
+            <ol>
+                <li>Go to the main app: <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></li>
+                <li>Login as demo user: <strong>demo@example.com</strong> / <strong>demo12345</strong></li>
+                <li>Create a post - it should now show as from "demo", not "admin"</li>
+                <li>If still showing as admin, refresh the page and try again</li>
+            </ol>
+        </div>
+
+        <div class="error">
+            <strong>⚠️ Important:</strong> Never log in as admin and then as demo in the same browser session without clearing tokens first!
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function checkTokens() {
+            const tokenInfo = document.getElementById('tokenInfo');
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const user = localStorage.getItem('user');
+            
+            let info = '<h4>🔍 Current localStorage contents:</h4>';
+            info += `authToken: ${authToken ? authToken.substring(0, 20) + '...' : 'NULL'}<br>`;
+            info += `adminToken: ${adminToken ? adminToken.substring(0, 20) + '...' : 'NULL'}<br>`;
+            info += `user: ${user ? JSON.parse(user).username || 'data' : 'NULL'}<br>`;
+            
+            // Check all localStorage items
+            info += '<br><h4>All localStorage items:</h4>';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                info += `${key}: ${value ? value.substring(0, 30) + '...' : 'NULL'}<br>`;
+            }
+            
+            tokenInfo.innerHTML = info;
+            tokenInfo.style.display = 'block';
+            
+            // Check for token conflicts
+            if (authToken && adminToken && authToken === adminToken) {
+                showStatus('🚨 CRITICAL: authToken and adminToken are identical! This is the cause of the issue.', 'error');
+            } else if (authToken && !adminToken) {
+                showStatus('✅ Good: Only authToken exists (normal user)', 'success');
+            } else if (!authToken && adminToken) {
+                showStatus('⚠️ Warning: Only adminToken exists', 'warning');
+            } else if (!authToken && !adminToken) {
+                showStatus('✅ Perfect: No tokens found (clean slate)', 'success');
+            } else {
+                showStatus('ℹ️ Both tokens exist but are different', 'warning');
+            }
+        }
+
+        function clearTokens() {
+            const items = ['authToken', 'adminToken', 'user', 'currentUser'];
+            let cleared = 0;
+            
+            items.forEach(item => {
+                if (localStorage.getItem(item)) {
+                    localStorage.removeItem(item);
+                    cleared++;
+                    console.log(`Cleared: ${item}`);
+                }
+            });
+            
+            // Also clear any session storage
+            sessionStorage.clear();
+            
+            showStatus(`✅ Cleared ${cleared} authentication tokens. localStorage is now clean!`, 'success');
+            
+            // Update token info
+            setTimeout(checkTokens, 100);
+        }
+
+        function goToLogin() {
+            // Clear tokens first
+            clearTokens();
+            
+            // Redirect to main app
+            setTimeout(() => {
+                window.location.href = 'http://localhost:5173';
+            }, 1000);
+        }
+
+        // Check tokens on page load
+        window.onload = function() {
+            checkTokens();
+        };
+    </script>
+</body>
+</html>

@@ -110,25 +110,64 @@ export function MessagingPage({ user, onBack }) {
   useEffect(() => {
     if (user) {
       fetchConversations();
+      
+      // Check if we have a target conversation ID to open
+      if (window.targetConversationId) {
+        console.log('📨 MessagingPage received target conversation ID:', window.targetConversationId);
+        // We'll handle this after conversations are loaded
+        const handleTargetConversation = () => {
+          const interval = setInterval(() => {
+            if (conversations.length > 0) {
+              clearInterval(interval);
+              const targetConv = conversations.find(c => c.id === window.targetConversationId);
+              if (targetConv) {
+                console.log('📨 Found target conversation:', targetConv);
+                handleSelectConversation(targetConv);
+                delete window.targetConversationId;
+              } else {
+                console.log('📨 Target conversation not found, fetching conversations again...');
+                fetchConversations();
+              }
+            }
+          }, 500);
+          
+          // Cleanup after 10 seconds
+          setTimeout(() => clearInterval(interval), 10000);
+        };
+        
+        // Start checking after a short delay to let conversations load
+        setTimeout(handleTargetConversation, 1000);
+      }
     }
-  }, [user]);
+  }, [user, conversations]);
 
   useEffect(() => {
-    if (view === "contacts") {
+    if (view === "contacts" && user) {
       fetchContacts();
     }
-  }, [view]);
+  }, [view, user]);
 
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
 
   useEffect(() => {
     if (selectedConversation) {
       console.log("🔄 useEffect: Using conversation ID:", selectedConversation.id);
+      
+      // Initial fetch
       fetchMessages(selectedConversation.id);
+      
+      // Set up polling with shorter interval for better real-time experience
       const interval = setInterval(() => {
-        fetchMessages(selectedConversation.id);
-      }, 10000); // Increased from 3000ms to 10000ms (10 seconds) to reduce server load
-      return () => clearInterval(interval);
+        if (selectedConversation) {
+          console.log("🔄 Polling for new messages...");
+          fetchMessages(selectedConversation.id);
+        }
+      }, 2000); // Poll every 2 seconds for better responsiveness
+      
+      return () => {
+        console.log("🔄 Cleaning up polling interval");
+        clearInterval(interval);
+      };
     }
   }, [selectedConversation]);
 
@@ -252,9 +291,11 @@ export function MessagingPage({ user, onBack }) {
 
   const fetchMessages = async (conversationId) => {
     try {
-      // Rate limiting: don't fetch if we fetched within the last 2 seconds
+      console.log("🔄 fetchMessages called for conversation:", conversationId);
+      
+      // Simple rate limiting - don't fetch if we fetched within the last 1 second
       const now = Date.now();
-      if (now - lastFetchRef.current < 2000) {
+      if (now - lastFetchRef.current < 1000) {
         console.log("🔄 fetchMessages: Rate limited, skipping fetch");
         return;
       }
@@ -263,57 +304,23 @@ export function MessagingPage({ user, onBack }) {
       console.log("🔄 fetchMessages: Using conversation ID:", conversationId);
       
       const data = await api.getMessages(conversationId);
-      console.log("Fetched messages:", data);
-      console.log("Message structure sample:", data[0] ? JSON.stringify(data[0], null, 2) : "No messages");
+      console.log("📨 Fetched messages:", data.length, "messages");
+      
+      if (!Array.isArray(data)) {
+        console.error("❌ Invalid data received from API:", data);
+        return;
+      }
+      
       // Backend returns newest first, reverse to show oldest first
-      const newMessages = Array.isArray(data) ? data.reverse() : [];
+      const newMessages = data.reverse();
       
-      setMessages(prev => {
-        // Process messages for edit notifications
-        let processedMessages = newMessages.map(newMsg => {
-          // Skip if message is undefined, but allow messages with attachments even if no text
-          if (!newMsg) return newMsg;
-          
-          // Check if this is an edit notification
-          const editInfo = newMsg.text ? processEditNotification(newMsg.text) : null;
-          if (editInfo) {
-            // Find the original message by signature and update it
-            return prev.map(msg => {
-              const msgSignature = `${msg.sender?.username}:${msg.text}:${msg.created_at}`;
-              if (msgSignature === editInfo.messageSignature) {
-                return { 
-                  ...msg, 
-                  text: editInfo.editData.new, 
-                  edited: true, 
-                  edited_at: new Date().toISOString(),
-                  edit_notification: editInfo.editData
-                };
-              }
-              return msg;
-            }).filter(msg => msg.text !== newMsg.text); // Remove the edit notification message
-          }
-          
-          // Regular message processing
-          const existingMsg = prev.find(m => m.id === newMsg.id);
-          // If message was edited locally, keep the local version
-          if (existingMsg && existingMsg.edited) {
-            return { ...newMsg, text: existingMsg.text, edited: existingMsg.edited, edited_at: existingMsg.edited_at };
-          }
-          return newMsg;
-        });
-        
-        // Filter out edit notification messages (only if text exists)
-        processedMessages = processedMessages.filter(msg => !msg.text || !msg.text.startsWith('EDIT_MESSAGE:'));
-        
-        return processedMessages;
-      });
+      // Simple message update - just replace with new messages
+      setMessages(newMessages);
+      console.log("📨 Updated messages display with", newMessages.length, "messages");
       
-      // TEMPORARILY DISABLED TO FIX 404 ERRORS
-      // await api.markConversationRead(conversationIdToFetch);  // Use the same conversation ID
-      console.log("⚠️ markConversationRead temporarily disabled");
     } catch (error) {
-      console.error("Failed to fetch messages:", error);
-      setMessages([]);
+      console.error("❌ Failed to fetch messages:", error);
+      // Don't clear messages on error, just log it
     }
   };
 
@@ -394,21 +401,34 @@ export function MessagingPage({ user, onBack }) {
 
     try {
       const result = await api.sendMessage(
-        conversationIdToUse,  // Use conversation 1 instead of 6
+        conversationIdToUse,
         finalText,
         selectedFiles,
         selectedReel?.id
       );
       
       console.log("✅ Message sent successfully:", result);
+      console.log("📨 Message details:", {
+        id: result.id,
+        sender: result.sender?.username,
+        text: result.text,
+        conversation: result.conversation
+      });
 
       // Only clear files AFTER successful upload
       setMessageText("");
       setSelectedFiles([]);
       setSelectedReel(null);
       setReplyToMessage(null);
-      fetchMessages(conversationIdToUse);  // Fetch from the correct conversation
+      
+      // Immediately fetch messages to show the sent message
+      fetchMessages(conversationIdToUse);
       fetchConversations();
+      
+      // Trigger global notification refresh to update badge immediately
+      if (window.refreshNotifications) {
+        window.refreshNotifications();
+      }
       
       // Mark the correct conversation as read - TEMPORARILY DISABLED
       // await api.markConversationRead(conversationIdToUse);
@@ -813,7 +833,8 @@ const handleFileSelect = async (e) => {
   const handleAddReaction = (message, emoji) => {
     // Add reaction to message
     const reactions = message.reactions || [];
-    const existingReaction = reactions.find(r => r.emoji === emoji && r.user_id === user.id);
+    const currentUserId = user?.id || user?.userId || user?.username;
+    const existingReaction = reactions.find(r => r.emoji === emoji && String(r.user_id) === String(currentUserId));
     
     if (existingReaction) {
       // Remove reaction
@@ -822,7 +843,7 @@ const handleFileSelect = async (e) => {
         msg.id === message.id 
           ? { 
               ...msg, 
-              reactions: reactions.filter(r => !(r.emoji === emoji && r.user_id === user.id))
+              reactions: reactions.filter(r => !(r.emoji === emoji && String(r.user_id) === String(currentUserId)))
             } 
           : msg
       ));
@@ -833,7 +854,7 @@ const handleFileSelect = async (e) => {
         msg.id === message.id 
           ? { 
               ...msg, 
-              reactions: [...reactions.filter(r => r.emoji !== emoji), { emoji, user_id: user.id, username: user.username }]
+              reactions: [...reactions.filter(r => r.emoji !== emoji), { emoji, user_id: currentUserId, username: user.username }]
             } 
           : msg
       ));
@@ -1004,8 +1025,8 @@ const handleFileSelect = async (e) => {
   );
 
   const renderContactsList = () => {
-    // Fetch contacts immediately when this view renders
-    if (contacts.length === 0 && !loading) {
+    // Fetch contacts immediately when this view renders (only if user is logged in)
+    if (contacts.length === 0 && !loading && user) {
       console.log("Contacts list is empty, fetching now...");
       fetchContacts();
     }
@@ -1168,6 +1189,23 @@ const handleFileSelect = async (e) => {
             Active now
           </div>
         </div>
+        <button onClick={() => {
+          console.log("🔄 Manual refresh triggered");
+          if (selectedConversation) {
+            fetchMessages(selectedConversation.id);
+            fetchConversations();
+          }
+        }} style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: 8,
+          marginRight: 4,
+        }} title="Refresh messages">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={T.txt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
         <button onClick={() => setView("call-history")} style={{
           background: "none",
           border: "none",
@@ -1215,8 +1253,12 @@ const handleFileSelect = async (e) => {
           </div>
         ) : (
           messages.map((msg, index) => {
-            const isOwn = Number(msg.sender?.id) === Number(user?.id);
-            console.log(`Message ${msg.id}: sender=${msg.sender?.id} (${msg.sender?.username}), user=${user?.id} (${user?.username}), isOwn=${isOwn}`);
+            // Improved ID comparison with fallbacks
+            const senderId = msg.sender?.id || msg.sender_id || msg.senderUsername;
+            const currentUserId = user?.id || user?.userId || user?.username;
+            const isOwn = String(senderId) === String(currentUserId);
+            
+            console.log(`Message ${msg.id}: sender=${senderId} (${msg.sender?.username}), user=${currentUserId} (${user?.username}), isOwn=${isOwn}`);
             console.log(`Message ${msg.id} attachments:`, msg.attachments);
             console.log(`Message ${msg.id} full data:`, JSON.stringify(msg, null, 2));
             const showAvatar = index === 0 || messages[index - 1]?.sender?.id !== msg.sender?.id;
@@ -1433,7 +1475,10 @@ const handleFileSelect = async (e) => {
                             style={{
                               fontSize: 16,
                               cursor: "pointer",
-                              background: reaction.user_id === user.id ? T.pri : "#f0f0f0",
+                              background: (() => {
+                                const currentUserId = user?.id || user?.userId || user?.username;
+                                return String(reaction.user_id) === String(currentUserId) ? T.pri : "#f0f0f0";
+                              })(),
                               padding: "2px 6px",
                               borderRadius: "12px",
                               border: "1px solid #ddd",
@@ -1488,7 +1533,11 @@ const handleFileSelect = async (e) => {
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {messageMenu.message.sender?.id === user?.id && (
+                        {(() => {
+                          const senderId = messageMenu.message.sender?.id || messageMenu.message.sender_id || messageMenu.message.senderUsername;
+                          const currentUserId = user?.id || user?.userId || user?.username;
+                          return String(senderId) === String(currentUserId);
+                        })() && (
                           <button
                             onClick={() => handleEditMessage(messageMenu.message)}
                             style={{

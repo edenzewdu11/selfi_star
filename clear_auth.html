@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Authentication</title>
+</head>
+<body>
+    <h1>Clearing Authentication Data...</h1>
+    <script>
+        // Clear all auth-related data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('user');
+        
+        // Clear session storage too
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('adminToken');
+        sessionStorage.removeItem('user');
+        
+        document.body.innerHTML = '<h1>Authentication data cleared!</h1><p>You can now refresh the app and log in again.</p>';
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 2000);
+    </script>
+</body>
+</html>

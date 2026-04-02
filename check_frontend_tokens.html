@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Frontend Tokens</title>
+</head>
+<body>
+    <h1>Frontend Token Check</h1>
+    <button onclick="checkTokens()">Check Current Tokens</button>
+    <div id="result"></div>
+
+    <script>
+        function checkTokens() {
+            const result = document.getElementById('result');
+            
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            result.innerHTML = `
+                <h3>Current tokens in localStorage:</h3>
+                <p><strong>authToken:</strong> ${authToken ? authToken.substring(0, 50) + '...' : 'NONE'}</p>
+                <p><strong>adminToken:</strong> ${adminToken ? adminToken.substring(0, 50) + '...' : 'NONE'}</p>
+                <p><strong>SessionStorage authToken:</strong> ${sessionStorage.getItem('authToken') ? sessionStorage.getItem('authToken').substring(0, 50) + '...' : 'NONE'}</p>
+                <p><strong>SessionStorage adminToken:</strong> ${sessionStorage.getItem('adminToken') ? sessionStorage.getItem('adminToken').substring(0, 50) + '...' : 'NONE'}</p>
+                
+                <h3>Cookie check:</h3>
+                <p><strong>Document cookies:</strong> ${document.cookie || 'NONE'}</p>
+                
+                <button onclick="clearAllTokens()" style="background: red; color: white; padding: 10px; margin-top: 10px;">Clear All Tokens</button>
+            `;
+        }
+        
+        function clearAllTokens() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('adminToken');
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('adminToken');
+            
+            // Clear cookies too
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"); 
+            });
+            
+            alert('All tokens cleared! Refresh your app and login again.');
+            checkTokens();
+        }
+        
+        // Auto-check on load
+        window.onload = checkTokens;
+    </script>
+</body>
+</html>

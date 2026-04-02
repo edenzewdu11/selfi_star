@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Admin Tokens</title>
+</head>
+<body>
+    <h1>Clear Admin Tokens</h1>
+    <button onclick="clearTokens()">Clear All Tokens</button>
+    <div id="result"></div>
+
+    <script>
+        function clearTokens() {
+            const result = document.getElementById('result');
+            
+            // Show tokens before clearing
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            result.innerHTML = `
+                <h3>Before clearing:</h3>
+                <p>authToken: ${authToken ? authToken.substring(0, 20) + '...' : 'NONE'}</p>
+                <p>adminToken: ${adminToken ? adminToken.substring(0, 20) + '...' : 'NONE'}</p>
+            `;
+            
+            // Clear tokens
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('adminToken');
+            
+            // Show after clearing
+            result.innerHTML += `
+                <h3>After clearing:</h3>
+                <p>authToken: ${localStorage.getItem('authToken') || 'NONE'}</p>
+                <p>adminToken: ${localStorage.getItem('adminToken') || 'NONE'}</p>
+                <p><strong>Tokens cleared! Please refresh your app and login again.</strong></p>
+            `;
+        }
+        
+        // Auto-show current tokens on load
+        window.onload = function() {
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            document.getElementById('result').innerHTML = `
+                <h3>Current tokens:</h3>
+                <p>authToken: ${authToken ? authToken.substring(0, 20) + '...' : 'NONE'}</p>
+                <p>adminToken: ${adminToken ? adminToken.substring(0, 20) + '...' : 'NONE'}</p>
+                ${adminToken ? '<p style="color: red;"><strong>Warning: adminToken found! This may cause issues.</strong></p>' : ''}
+            `;
+        }
+    </script>
+</body>
+</html>

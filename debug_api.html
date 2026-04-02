@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug</title>
+</head>
+<body>
+    <h1>API Debug Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Testing API...</h2>';
+            
+            try {
+                // Test without authentication first
+                console.log('Testing GET /api/reels/ without auth...');
+                const response = await fetch('http://localhost:8000/api/reels/');
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                resultsDiv.innerHTML = `
+                    <h2>✅ API Test Results</h2>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Data Type:</strong> ${Array.isArray(data) ? 'Array' : typeof data}</p>
+                    <p><strong>Length:</strong> ${Array.isArray(data) ? data.length : 'N/A'}</p>
+                    <p><strong>First Item:</strong></p>
+                    <pre>${JSON.stringify(data[0] || {}, null, 2)}</pre>
+                `;
+                
+                if (data.length > 0) {
+                    const firstItem = data[0];
+                    console.log('First item media:', firstItem.media);
+                    console.log('First item image:', firstItem.image);
+                    console.log('First item user:', firstItem.user);
+                }
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                resultsDiv.innerHTML = `
+                    <h2>❌ API Test Failed</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Stack:</strong> <pre>${error.stack}</pre></p>
+                `;
+            }
+        }
+        
+        // Run test when page loads
+        testAPI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat - Demo & Dere</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #DA9B2A;
+            margin-bottom: 20px;
+        }
+        .user-select {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .user-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .user-btn.active {
+            background: #28a745;
+        }
+        .user-btn.demo {
+            background: #007bff;
+        }
+        .user-btn.dere {
+            background: #28a745;
+        }
+        .chat-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .messages {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .message.demo {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .message.dere {
+            background: #28a745;
+            color: white;
+            margin-right: auto;
+        }
+        .message-info {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .send-btn {
+            background: #DA9B2A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .send-btn:hover {
+            background: #B8821E;
+        }
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .control-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .control-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Simple Chat - Demo & Dere</h1>
+        
+        <div class="user-select">
+            <h3>🔐 Select User:</h3>
+            <button class="user-btn demo" onclick="selectUser('demo')">Login as Demo</button>
+            <button class="user-btn dere" onclick="selectUser('dere')">Login as Dere</button>
+            <div id="currentUser" class="status info">No user selected</div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="fetchMessages()">🔄 Refresh Messages</button>
+            <button class="control-btn" onclick="startAutoRefresh()">▶️ Auto Refresh</button>
+            <button class="control-btn" onclick="stopAutoRefresh()">⏸️ Stop Auto Refresh</button>
+            <button class="control-btn" onclick="clearMessages()">🗑️ Clear Display</button>
+        </div>
+
+        <div class="chat-area">
+            <div id="messages" class="messages">
+                <div style="text-align: center; color: #666; padding: 20px;">
+                    Select a user to start chatting
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="messageInput" class="message-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                <button id="sendBtn" class="send-btn" onclick="sendMessage()" disabled>Send</button>
+            </div>
+        </div>
+
+        <div id="status" class="status info">Ready to chat</div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        let currentUser = null;
+        let authToken = null;
+        let conversationId = 9; // Known conversation ID between demo and dere
+        let autoRefreshInterval = null;
+
+        // User credentials
+        const users = {
+            demo: { email: 'demo@example.com', password: 'demo12345' },
+            dere: { email: 'dere@gmail.com', password: 'test123' }
+        };
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        function updateCurrentUser() {
+            const userDiv = document.getElementById('currentUser');
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
+            
+            if (currentUser) {
+                userDiv.className = 'status success';
+                userDiv.textContent = `Logged in as: ${currentUser}`;
+                sendBtn.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+            } else {
+                userDiv.className = 'status info';
+                userDiv.textContent = 'No user selected';
+                sendBtn.disabled = true;
+                messageInput.disabled = true;
+            }
+        }
+
+        async function selectUser(username) {
+            try {
+                showStatus(`Logging in as ${username}...`, 'info');
+                
+                // Login
+                const loginResponse = await fetch(`${API_BASE}/auth/login/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: users[username].email,
+                        password: users[username].password
+                    })
+                });
+
+                if (!loginResponse.ok) {
+                    throw new Error(`Login failed: ${loginResponse.status}`);
+                }
+
+                const loginData = await loginResponse.json();
+                authToken = loginData.token;
+                currentUser = username;
+
+                // Update UI
+                updateCurrentUser();
+                
+                // Update button states
+                document.querySelectorAll('.user-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.user-btn.${username}`).classList.add('active');
+
+                // Fetch messages
+                await fetchMessages();
+                
+                // Start auto refresh
+                startAutoRefresh();
+                
+                showStatus(`✅ Logged in as ${username}`, 'success');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showStatus(`❌ Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function fetchMessages() {
+            if (!authToken) {
+                showStatus('Please login first', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/messages/?conversation=${conversationId}`, {
+                    headers: {
+                        'Authorization': `Token ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch messages: ${response.status}`);
+                }
+
+                const messages = await response.json();
+                displayMessages(messages);
+                showStatus(`📨 Loaded ${messages.length} messages`, 'success');
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showStatus(`❌ Failed to fetch messages: ${error.message}`, 'error');
+            }
+        }
+
+        function displayMessages(messages) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+
+            // Sort messages by created_at
+            messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender.username}`;
+                
+                const time = new Date(msg.created_at).toLocaleTimeString();
+                messageDiv.innerHTML = `
+                    <div>${msg.text}</div>
+                    <div class="message-info">${msg.sender.username} • ${time}</div>
+                `;
+                
+                messagesDiv.appendChild(messageDiv);
+            });
+
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const text = messageInput.value.trim();
+            
+            if (!text || !authToken) {
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('conversation_id', conversationId);
+                formData.append('text', text);
+                formData.append('message_type', 'text');
+
+                const response = await fetch(`${API_BASE}/messages/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${authToken}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to send message: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Message sent:', result);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Refresh messages
+                await fetchMessages();
+                
+                showStatus('✅ Message sent successfully', 'success');
+                
+            } catch (error) {
+                console.error('Send error:', error);
+                showStatus(`❌ Failed to send message: ${error.message}`, 'error');
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            autoRefreshInterval = setInterval(() => {
+                if (authToken) {
+                    fetchMessages();
+                }
+            }, 3000); // Refresh every 3 seconds
+            
+            showStatus('🔄 Auto refresh started (every 3 seconds)', 'success');
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                showStatus('⏸️ Auto refresh stopped', 'info');
+            }
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Messages cleared</div>';
+        }
+
+        // Initialize
+        window.onload = function() {
+            updateCurrentUser();
+            showStatus('🚀 Simple Chat Ready - Select a user to begin', 'info');
+        };
+
+        // Cleanup on unload
+        window.onbeforeunload = function() {
+            stopAutoRefresh();
+        };
+    </script>
+</body>
+</html>

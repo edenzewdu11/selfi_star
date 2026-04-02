@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Demo User Auth</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .warning { background: #ffcccc; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .success { background: #ccffcc; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+        .clear { background: #ff4444; color: white; }
+        .test { background: #4444ff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Reset Demo User Authentication</h1>
+    
+    <div class="warning">
+        <strong>⚠️ This will clear all tokens and force a fresh login.</strong><br>
+        Make sure you know the demo user credentials before proceeding.
+    </div>
+
+    <button onclick="resetAll()" class="clear">🗑️ Reset Everything</button>
+    <button onclick="checkStatus()">🔍 Check Current Status</button>
+    <button onclick="testDemoLogin()" class="test">🧪 Test Demo Login</button>
+
+    <div id="result"></div>
+
+    <script>
+        function checkStatus() {
+            const result = document.getElementById('result');
+            
+            const authToken = localStorage.getItem('authToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const user = localStorage.getItem('user');
+            
+            let html = '<h3>Current Status:</h3>';
+            html += `<p><strong>authToken:</strong> ${authToken ? 'EXISTS (' + authToken.substring(0, 20) + '...)' : 'NONE'}</p>`;
+            html += `<p><strong>adminToken:</strong> ${adminToken ? 'EXISTS (' + adminToken.substring(0, 20) + '...)' : 'NONE'}</p>`;
+            html += `<p><strong>user data:</strong> ${user ? 'EXISTS' : 'NONE'}</p>`;
+            
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    html += `<p><strong>Current user:</strong> ${userData.username} (ID: ${userData.id})</p>`;
+                    if (userData.username === 'admin') {
+                        html += '<p style="color: red;"><strong>⚠️ Currently logged in as ADMIN!</strong></p>';
+                    }
+                } catch (e) {
+                    html += '<p style="color: orange;"><strong>⚠️ User data is corrupted</strong></p>';
+                }
+            }
+            
+            result.innerHTML = html;
+        }
+        
+        function resetAll() {
+            if (!confirm('This will clear all authentication data. Are you sure?')) {
+                return;
+            }
+            
+            // Clear everything
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"); 
+            });
+            
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="success">
+                    <h3>✅ All authentication data cleared!</h3>
+                    <p>Please refresh your app and login with demo credentials:</p>
+                    <p><strong>Email:</strong> demo@example.com</p>
+                    <p><strong>Password:</strong> demo12345</p>
+                    <p>After logging in, test sending a message to verify the fix.</p>
+                </div>
+            `;
+        }
+        
+        function testDemoLogin() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<h3>Testing demo login...</h3>';
+            
+            // Test API call to login endpoint
+            fetch('http://localhost:8000/api/auth/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: 'demo@example.com',
+                    password: 'demo12345'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    result.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Demo login successful!</h3>
+                            <p><strong>User:</strong> ${data.user.username} (ID: ${data.user.id})</p>
+                            <p><strong>Token:</strong> ${data.token.substring(0, 20)}...</p>
+                            <p>Backend authentication is working correctly.</p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <div class="warning">
+                            <h3>❌ Demo login failed!</h3>
+                            <p>${JSON.stringify(data)}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                result.innerHTML = `
+                    <div class="warning">
+                        <h3>❌ Network error!</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure the backend server is running on localhost:8000</p>
+                    </div>
+                `;
+            });
+        }
+        
+        // Auto-check status on load
+        window.onload = checkStatus;
+    </script>
+</body>
+</html>
