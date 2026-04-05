@@ -65,20 +65,18 @@ export default function WerqRoot() {
       console.log('🔧 Token confusion was detected and cleared');
     }
     
-    const token = localStorage.getItem('authToken')
-    const savedUser = localStorage.getItem('user')
-    if (token && savedUser) {
-      // Validate token before using it
-      if (token.length < 10 || token.includes('undefined') || token.includes('null')) {
-        console.log('🔑 Invalid token in localStorage, clearing...');
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('user')
-        return
+    const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('authToken');
+    
+    if (savedToken && savedToken.length > 10) {
+      api.setAuthToken(savedToken);
+      if (savedUser) {
+        try {
+          setAuthUser(JSON.parse(savedUser));
+        } catch (e) {
+          console.error('Failed to parse saved user:', e);
+        }
       }
-      
-      api.setAuthToken(token)
-      setAuthUser(JSON.parse(savedUser))
-      
       // Test the token by making a simple API call
       api.getProfile().then(profile => {
         // Verify the profile matches what we expect
@@ -87,15 +85,45 @@ export default function WerqRoot() {
           console.warn('This may cause messages to appear as from admin instead of the actual user');
           console.warn('Please log out and log back in with the correct account');
         }
-      }).catch(error => {
-        console.error('🔑 Token validation failed:', error)
-        // Clear invalid token and user data
-        api.setAuthToken(null)
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('user')
-        setAuthUser(null)
-      })
+        setAuthUser(profile.user);
+        localStorage.setItem('user', JSON.stringify(profile.user));
+      }).catch(err => {
+        console.error('Token validation failed:', err);
+        // Clear invalid token
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        api.setAuthToken(null);
+        setAuthUser(null);
+      });
     }
+  }, [])
+
+  // Handle hash-based routing for campaign details
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      console.log('Hash changed:', hash);
+      
+      // Check for campaign detail hash like #/campaign/10
+      const campaignMatch = hash.match(/^#\/campaign\/(\d+)$/);
+      if (campaignMatch) {
+        const campaignId = parseInt(campaignMatch[1]);
+        console.log('Campaign detail hash detected, campaignId:', campaignId);
+        setCampaignId(campaignId);
+        setShowCampaigns(false);
+        setShowCampaignDetail(true);
+      }
+    };
+
+    // Check on initial load
+    handleHashChange();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, [])
 
   // Listen for navigate to create post event from campaign modal
@@ -412,6 +440,7 @@ export default function WerqRoot() {
               onSuccess={u=>{ 
                 setAuthUser(u);
                 localStorage.setItem('user', JSON.stringify(u));
+                // Token is already saved by api.login() in ModernLoginScreen
                 setShowLogin(false);
               }} 
               onRegister={()=>{ 
@@ -449,6 +478,7 @@ export default function WerqRoot() {
               onSuccess={u=>{ 
                 setAuthUser(u);
                 localStorage.setItem('user', JSON.stringify(u));
+                // Token is already saved by api.register() in ModernRegisterScreen
                 setShowRegister(false);
               }} 
               onLogin={()=>{ 

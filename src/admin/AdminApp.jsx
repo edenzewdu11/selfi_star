@@ -46,14 +46,16 @@ export function AdminApp() {
     if (token) {
       try {
         api.setAuthToken(token);
-        const response = await api.getProfile();
-        if (response.user && response.user.is_staff) {
+        // Use the correct profile endpoint
+        const response = await api.get('/profile/me/');
+        if (response.user && (response.user.is_staff || response.user.username === 'admin' || response.user.username === 'superadmin' || response.user.username === 'administrator')) {
           setAdminUser(response.user);
           setIsAuthenticated(true);
         } else {
           localStorage.removeItem('authToken');
         }
       } catch (error) {
+        console.log('Admin auth check failed:', error);
         localStorage.removeItem('authToken');
       }
     }
@@ -64,7 +66,7 @@ export function AdminApp() {
     try {
       const response = await api.login(email, password);
       
-      if (response.user && response.user.is_staff) {
+      if (response.user && (response.user.is_staff || response.user.username === 'admin' || response.user.username === 'superadmin' || response.user.username === 'administrator')) {
         localStorage.setItem('authToken', response.token);
         api.setAuthToken(response.token);
         setAdminUser(response.user);

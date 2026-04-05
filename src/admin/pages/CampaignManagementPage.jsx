@@ -23,9 +23,10 @@ export function CampaignManagementPage({ theme }) {
       setLoading(true);
       const filterParam = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
       const response = await api.request(`/admin/campaigns/${filterParam}`);
-      setCampaigns(response.campaigns);
+      setCampaigns(response.data || []);
     } catch (error) {
       console.error('Failed to load campaigns:', error);
+      setCampaigns([]);
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ export function CampaignManagementPage({ theme }) {
       message: `Are you sure you want to delete "${campaign.title}"? This action cannot be undone.`,
       onConfirm: async () => {
         try {
-          await api.request(`/admin/campaigns/${campaign.id}/delete/`, { method: 'DELETE' });
+          await api.request(`/admin/campaigns/${campaign.id}/`, { method: 'DELETE' });
           loadCampaigns();
         } catch (error) {
           console.error('Failed to delete campaign:', error);
@@ -50,24 +51,17 @@ export function CampaignManagementPage({ theme }) {
   const handleAnnounceWinners = (campaign) => {
     setConfirmModal({
       isOpen: true,
-      title: 'Announce Winners',
-      message: `Announce winners for "${campaign.title}"? Top ${campaign.winner_count} entries will be selected.`,
-      type: 'success',
-      onConfirm: async () => {
-        try {
-          await api.request(`/admin/campaigns/${campaign.id}/announce-winners/`, { method: 'POST' });
-          loadCampaigns();
-        } catch (error) {
-          console.error('Failed to announce winners:', error);
-        }
-      }
+      title: 'Feature Not Available',
+      message: 'The announce winners feature is not yet implemented. Please check back later.',
+      type: 'info',
+      onConfirm: () => {}
     });
   };
 
   const handleStatusChange = async (campaignId, newStatus) => {
     try {
-      await api.request(`/admin/campaigns/${campaignId}/update/`, {
-        method: 'PATCH',
+      await api.request(`/admin/campaigns/${campaignId}/`, {
+        method: 'PUT',
         body: JSON.stringify({ status: newStatus })
       });
       loadCampaigns();
@@ -92,10 +86,10 @@ export function CampaignManagementPage({ theme }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return theme.green;
-      case 'voting': return theme.blue;
       case 'completed': return theme.sub;
       case 'draft': return theme.orange;
       case 'cancelled': return theme.red;
+      case 'paused': return theme.yellow;
       default: return theme.sub;
     }
   };
@@ -160,7 +154,7 @@ export function CampaignManagementPage({ theme }) {
         overflowX: 'auto',
         paddingBottom: 8,
       }}>
-        {['all', 'draft', 'active', 'voting', 'completed'].map(status => (
+        {['all', 'draft', 'active', 'paused', 'completed', 'cancelled'].map(status => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
@@ -280,9 +274,9 @@ export function CampaignManagementPage({ theme }) {
                         outline: 'none',
                       }}
                     >
-                      <option value="draft">📝 Draft</option>
                       <option value="active">✅ Active (Accepting Entries)</option>
-                      <option value="voting">🗳️ Voting Phase</option>
+                      <option value="draft">📝 Draft</option>
+                      <option value="paused">⏸️ Paused</option>
                       <option value="completed">🏁 Completed</option>
                       <option value="cancelled">❌ Cancelled</option>
                     </select>
@@ -354,7 +348,7 @@ export function CampaignManagementPage({ theme }) {
                       <Users size={14} />
                       View Entries
                     </button>
-                    {campaign.status === 'voting' && !campaign.winners_announced && (
+                    {campaign.status === 'active' && !campaign.winners_announced && (
                       <button
                         onClick={() => handleAnnounceWinners(campaign)}
                         style={{
@@ -467,15 +461,19 @@ function CreateCampaignModal({ theme, onClose, onSuccess }) {
     prize_description: '',
     prize_value: '',
     status: 'active',
+    campaign_type: 'daily',
     min_followers: 0,
     min_level: 1,
     min_votes_per_reel: 0,
     required_hashtags: '',
-    start_date: '',
-    entry_deadline: '',
-    voting_start: '',
-    voting_end: '',
+    start_date: new Date().toISOString().slice(0, 16), // YYYY-MM-DD format
+    end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16), // 7 days from now
     winner_count: 1,
+    official_hashtag: '',
+    min_age: 18,
+    original_content_required: true,
+    max_entries_per_user: 1,
+    total_budget: ''
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -486,43 +484,34 @@ function CreateCampaignModal({ theme, onClose, onSuccess }) {
     setError('');
     
     try {
-      // Create FormData for file upload
-      const formDataToSend = new FormData();
+      // Prepare campaign data for API
+      const campaignData = {
+        title: formData.title,
+        description: formData.description,
+        campaign_type: formData.campaign_type || 'daily',
+        status: formData.status || 'draft',
+        start_date: formData.start_date && formData.start_date !== '' ? new Date(formData.start_date).toISOString() : new Date().toISOString(),
+        end_date: formData.end_date && formData.end_date !== '' ? new Date(formData.end_date).toISOString() : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+        total_budget: formData.total_budget || 0,
+        max_winners: formData.winner_count || 1,
+        official_hashtag: formData.official_hashtag || '',
+        min_age: formData.min_age || 18,
+        original_content_required: formData.original_content_required !== false,
+        max_entries_per_user: formData.max_entries_per_user || 1,
+        prize_title: formData.prize_title || '',
+        prize_value: formData.prize_value || 0,
+        creativity_weight: 30,
+        engagement_weight: 25,
+        consistency_weight: 20,
+        quality_weight: 15,
+        theme_weight: 10,
+        judge_weight: 70,
+        public_vote_weight: 30
+      };
       
-      // Add all form fields
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('prize_title', formData.prize_title);
-      formDataToSend.append('prize_description', formData.prize_description || formData.prize_title);
-      formDataToSend.append('prize_value', formData.prize_value);
-      formDataToSend.append('status', formData.status);
-      formDataToSend.append('min_followers', formData.min_followers);
-      formDataToSend.append('min_level', formData.min_level);
-      formDataToSend.append('winner_count', formData.winner_count);
-      
-      // Convert dates to ISO format
-      if (formData.start_date) {
-        formDataToSend.append('start_date', new Date(formData.start_date).toISOString());
-      }
-      if (formData.entry_deadline) {
-        formDataToSend.append('entry_deadline', new Date(formData.entry_deadline).toISOString());
-      }
-      if (formData.voting_start) {
-        formDataToSend.append('voting_start', new Date(formData.voting_start).toISOString());
-      }
-      if (formData.voting_end) {
-        formDataToSend.append('voting_end', new Date(formData.voting_end).toISOString());
-      }
-      
-      // Add image if selected
-      if (imageFile) {
-        formDataToSend.append('image', imageFile);
-      }
-      
-      const response = await api.request('/admin/campaigns/create/', {
+      const response = await api.request('/admin/campaigns/', {
         method: 'POST',
-        body: formDataToSend,
-        isFormData: true
+        body: JSON.stringify(campaignData)
       });
       onSuccess();
     } catch (error) {
@@ -840,9 +829,9 @@ function CreateCampaignModal({ theme, onClose, onSuccess }) {
                   <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
                     <input
                       type="date"
-                      value={formData.start_date.split('T')[0] || ''}
+                      value={formData.start_date && formData.start_date !== '' ? formData.start_date.split('T')[0] : ''}
                       onChange={(e) => {
-                        const time = formData.start_date.split('T')[1] || '09:00';
+                        const time = formData.start_date && formData.start_date !== '' && formData.start_date.split('T')[1] ? formData.start_date.split('T')[1] : '09:00';
                         setFormData({ ...formData, start_date: `${e.target.value}T${time}` });
                       }}
                       required
@@ -855,10 +844,10 @@ function CreateCampaignModal({ theme, onClose, onSuccess }) {
                       }}
                     />
                     <select
-                      value={formData.start_date.split('T')[1]?.split(':')[0] || '09'}
+                      value={formData.start_date && formData.start_date !== '' && formData.start_date.split('T')[1] ? formData.start_date.split('T')[1]?.split(':')[0] : '09'}
                       onChange={(e) => {
-                        const date = formData.start_date.split('T')[0] || '';
-                        const mins = formData.start_date.split(':')[1] || '00';
+                        const date = formData.start_date && formData.start_date !== '' ? formData.start_date.split('T')[0] : '';
+                        const mins = formData.start_date && formData.start_date !== '' && formData.start_date.split(':')[1] ? formData.start_date.split(':')[1] : '00';
                         setFormData({ ...formData, start_date: `${date}T${e.target.value}:${mins}` });
                       }}
                       style={{
@@ -876,153 +865,6 @@ function CreateCampaignModal({ theme, onClose, onSuccess }) {
                       {[...Array(12)].map((_, i) => {
                         const hour = i + 13;
                         return <option key={hour} value={hour.toString().padStart(2, '0')}>{i + 1}:00 PM</option>;
-                      })}
-                    </select>
-                  </div>
-                </div>
-                
-                {/* Entry Deadline */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: theme.txt, marginBottom: 8 }}>
-                    Entry Deadline *
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-                    <input
-                      type="date"
-                      value={formData.entry_deadline.split('T')[0] || ''}
-                      onChange={(e) => {
-                        const time = formData.entry_deadline.split('T')[1] || '23:59';
-                        setFormData({ ...formData, entry_deadline: `${e.target.value}T${time}` });
-                      }}
-                      required
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    />
-                    <select
-                      value={formData.entry_deadline.split('T')[1]?.split(':')[0] || '23'}
-                      onChange={(e) => {
-                        const date = formData.entry_deadline.split('T')[0] || '';
-                        const mins = formData.entry_deadline.split(':')[1] || '59';
-                        setFormData({ ...formData, entry_deadline: `${date}T${e.target.value}:${mins}` });
-                      }}
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    >
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i + 1;
-                        return <option key={hour} value={hour.toString().padStart(2, '0')}>{hour}:00 AM</option>;
-                      })}
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i + 13;
-                        return <option key={hour} value={hour.toString().padStart(2, '0')}>{i + 1}:00 PM</option>;
-                      })}
-                    </select>
-                  </div>
-                </div>
-                
-                {/* Voting Start */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: theme.txt, marginBottom: 8 }}>
-                    Voting Start *
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-                    <input
-                      type="date"
-                      value={formData.voting_start.split('T')[0] || ''}
-                      onChange={(e) => {
-                        const time = formData.voting_start.split('T')[1] || '00:00';
-                        setFormData({ ...formData, voting_start: `${e.target.value}T${time}` });
-                      }}
-                      required
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    />
-                    <select
-                      value={formData.voting_start.split('T')[1]?.split(':')[0] || '00'}
-                      onChange={(e) => {
-                        const date = formData.voting_start.split('T')[0] || '';
-                        const mins = formData.voting_start.split(':')[1] || '00';
-                        setFormData({ ...formData, voting_start: `${date}T${e.target.value}:${mins}` });
-                      }}
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    >
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i === 0 ? 12 : i;
-                        return <option key={i} value={i.toString().padStart(2, '0')}>{hour}:00 AM</option>;
-                      })}
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i === 0 ? 12 : i;
-                        return <option key={i + 12} value={(i + 12).toString().padStart(2, '0')}>{hour}:00 PM</option>;
-                      })}
-                    </select>
-                  </div>
-                </div>
-                
-                {/* Voting End */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: theme.txt, marginBottom: 8 }}>
-                    Voting End *
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-                    <input
-                      type="date"
-                      value={formData.voting_end.split('T')[0] || ''}
-                      onChange={(e) => {
-                        const time = formData.voting_end.split('T')[1] || '23:59';
-                        setFormData({ ...formData, voting_end: `${e.target.value}T${time}` });
-                      }}
-                      required
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    />
-                    <select
-                      value={formData.voting_end.split('T')[1]?.split(':')[0] || '23'}
-                      onChange={(e) => {
-                        const date = formData.voting_end.split('T')[0] || '';
-                        const mins = formData.voting_end.split(':')[1] || '59';
-                        setFormData({ ...formData, voting_end: `${date}T${e.target.value}:${mins}` });
-                      }}
-                      style={{
-                        padding: 12,
-                        border: `2px solid ${theme.border}`,
-                        borderRadius: 8,
-                        fontSize: 14,
-                        outline: 'none',
-                      }}
-                    >
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i === 0 ? 12 : i;
-                        return <option key={i} value={i.toString().padStart(2, '0')}>{hour}:00 AM</option>;
-                      })}
-                      {[...Array(12)].map((_, i) => {
-                        const hour = i === 0 ? 12 : i;
-                        return <option key={i + 12} value={(i + 12).toString().padStart(2, '0')}>{hour}:00 PM</option>;
                       })}
                     </select>
                   </div>
@@ -1089,10 +931,11 @@ function CampaignEntriesModal({ theme, campaign, onClose }) {
 
   const loadEntries = async () => {
     try {
-      const data = await api.request(`/admin/campaigns/${campaign.id}/entries/`);
-      setEntries(data);
+      const response = await api.request(`/admin/campaigns/${campaign.id}/entries/`);
+      setEntries(response.data || []);
     } catch (error) {
       console.error('Failed to load entries:', error);
+      setEntries([]);
     } finally {
       setLoading(false);
     }

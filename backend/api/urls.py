@@ -19,10 +19,12 @@ from .views_settings import (
     get_admin_notifications, mark_notification_read, send_platform_notification,
     bulk_user_action, get_database_stats
 )
-from .views_campaign import (
-    admin_campaigns_list, admin_campaign_create, admin_campaign_update, admin_campaign_delete,
-    admin_campaign_entries, admin_announce_winners, user_campaigns_list, user_campaign_enter,
-    user_campaign_vote, user_campaign_detail
+from .views_campaign_new import (
+    admin_campaigns_list, admin_campaign_detail, admin_campaign_entries, admin_campaign_stats,
+    admin_rewards_list, admin_assign_reward, admin_coin_stats, admin_coin_packages,
+    admin_user_coins, admin_grant_coins, user_campaigns, user_my_campaigns,
+    user_enter_campaign, user_campaign_entries, user_vote_campaign, user_coin_balance,
+    user_coin_packages, user_purchase_coins, user_coin_transactions
 )
 from .views_reels import reels_following, reels_saved, reels_trending
 
@@ -89,16 +91,32 @@ urlpatterns = [
     path('admin/users/bulk/', bulk_user_action, name='admin-bulk-action'),
     # Campaign Management (Admin)
     path('admin/campaigns/', admin_campaigns_list, name='admin-campaigns-list'),
-    path('admin/campaigns/create/', admin_campaign_create, name='admin-campaign-create'),
-    path('admin/campaigns/<int:campaign_id>/update/', admin_campaign_update, name='admin-campaign-update'),
-    path('admin/campaigns/<int:campaign_id>/delete/', admin_campaign_delete, name='admin-campaign-delete'),
+    path('admin/campaigns/<int:campaign_id>/', admin_campaign_detail, name='admin-campaign-detail'),
     path('admin/campaigns/<int:campaign_id>/entries/', admin_campaign_entries, name='admin-campaign-entries'),
-    path('admin/campaigns/<int:campaign_id>/announce-winners/', admin_announce_winners, name='admin-announce-winners'),
+    path('admin/campaigns/stats/', admin_campaign_stats, name='admin-campaign-stats'),
+    
+    # Reward Management (Admin)
+    path('admin/rewards/', admin_rewards_list, name='admin-rewards-list'),
+    path('admin/rewards/<int:reward_id>/assign/', admin_assign_reward, name='admin-assign-reward'),
+    
+    # Coin Management (Admin)
+    path('admin/coins/stats/', admin_coin_stats, name='admin-coin-stats'),
+    path('admin/coins/packages/', admin_coin_packages, name='admin-coin-packages'),
+    path('admin/coins/users/', admin_user_coins, name='admin-user-coins'),
+    path('admin/coins/grant/', admin_grant_coins, name='admin-grant-coins'),
+    
     # Campaign (User)
-    path('campaigns/', user_campaigns_list, name='campaigns-list'),
-    path('campaigns/<int:campaign_id>/', user_campaign_detail, name='campaign-detail'),
-    path('campaigns/<int:campaign_id>/enter/', user_campaign_enter, name='campaign-enter'),
-    path('campaigns/entries/<int:entry_id>/vote/', user_campaign_vote, name='campaign-vote'),
+    path('campaigns/', user_campaigns, name='user-campaigns'),
+    path('campaigns/my/', user_my_campaigns, name='user-my-campaigns'),
+    path('campaigns/<int:campaign_id>/enter/', user_enter_campaign, name='user-enter-campaign'),
+    path('campaigns/<int:campaign_id>/entries/', user_campaign_entries, name='user-campaign-entries'),
+    path('campaigns/<int:campaign_id>/entries/<int:entry_id>/vote/', user_vote_campaign, name='user-vote-campaign'),
+    
+    # Coin System (User)
+    path('coins/balance/', user_coin_balance, name='user-coin-balance'),
+    path('coins/packages/', user_coin_packages, name='user-coin-packages'),
+    path('coins/purchase/', user_purchase_coins, name='user-purchase-coins'),
+    path('coins/transactions/', user_coin_transactions, name='user-coin-transactions'),
     # Reels Feeds
     path('reels/following/', reels_following, name='reels-following'),
     path('reels/saved/', reels_saved, name='reels-saved'),

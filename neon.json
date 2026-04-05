@@ -1,0 +1,8 @@
+{
+  "version": "1",
+  "database_url": "postgresql://neondb_owner:npg_U6oNsZYu0CdK@ep-snowy-union-amv5ptvv.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require",
+  "project": {
+    "id": "ep-snowy-union-amv5ptvv",
+    "region": "us-east-1"
+  }
+}

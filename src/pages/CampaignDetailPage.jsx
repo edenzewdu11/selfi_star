@@ -10,6 +10,7 @@ export function CampaignDetailPage({ theme, campaignId, onBack }) {
   const [userEntry, setUserEntry] = useState(null);
 
   useEffect(() => {
+    console.log('CampaignDetailPage useEffect - campaignId:', campaignId, typeof campaignId);
     if (campaignId) {
       loadCampaignDetails();
     }
@@ -18,12 +19,40 @@ export function CampaignDetailPage({ theme, campaignId, onBack }) {
   const loadCampaignDetails = async () => {
     try {
       setLoading(true);
-      const data = await api.request(`/campaigns/${campaignId}/`);
-      setCampaign(data);
-      setEntries(data.entries || []);
-      // Check if user has already entered
-      const userHasEntered = data.entries?.some(entry => entry.user?.id === data.current_user_id);
-      setUserEntry(userHasEntered ? data.entries.find(entry => entry.user?.id === data.current_user_id) : null);
+      
+      // Simple ID extraction
+      let id = campaignId;
+      if (typeof campaignId === 'object' && campaignId !== null) {
+        id = campaignId.id || campaignId.campaignId;
+      }
+      
+      console.log('Loading campaign with ID:', id);
+      
+      // Get campaign from the campaigns list
+      const campaignsResponse = await api.get('/campaigns/');
+      
+      if (!campaignsResponse.data || campaignsResponse.data.length === 0) {
+        throw new Error('No campaigns available');
+      }
+      
+      const campaign = campaignsResponse.data.find(c => c.id == parseInt(id));
+      
+      if (!campaign) {
+        throw new Error(`Campaign with ID ${id} not found`);
+      }
+      
+      setCampaign(campaign);
+      console.log('Campaign loaded:', campaign.title);
+      
+      // Get campaign entries
+      try {
+        const entriesResponse = await api.request(`/campaigns/${id}/entries/`);
+        setEntries(entriesResponse.data || []);
+      } catch (error) {
+        console.log('Could not load entries:', error);
+        setEntries([]);
+      }
+      
     } catch (error) {
       console.error('Failed to load campaign:', error);
     } finally {
@@ -207,7 +236,7 @@ export function CampaignDetailPage({ theme, campaignId, onBack }) {
             <div style={{
               width: '100%',
               height: 300,
-              background: `url(${campaign.image}) center/cover`,
+              background: `url(${campaign.image.startsWith('/media/') ? campaign.image.replace('/media/', '') : campaign.image}) center/cover`,
             }} />
           )}
           

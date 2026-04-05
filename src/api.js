@@ -1,8 +1,5 @@
 const API_BASE_URL = 'http://localhost:8000/api';
 
-// Clear any adminToken that might interfere with regular user authentication
-localStorage.removeItem('adminToken');
-
 let authToken = localStorage.getItem('authToken');
 
 // Validate token format - clear if invalid
@@ -12,34 +9,13 @@ if (authToken && (authToken.length < 10 || authToken.includes('undefined') || au
   authToken = null;
 }
 
-// Additional validation: ensure we're not accidentally using admin token
-if (authToken) {
-  const adminToken = localStorage.getItem('adminToken');
-  if (authToken === adminToken) {
-    console.log('🔑 Detected admin token in user slot, clearing...');
-    localStorage.removeItem('authToken');
-    authToken = null;
-  }
-}
-
 console.log('🔑 Initial authToken loaded:', authToken ? authToken.substring(0, 10) + '...' : 'NONE');
 
 const api = {
   setAuthToken: (token) => {
     console.log('🔑 setAuthToken called with:', token ? token.substring(0, 10) + '...' : 'NULL');
     
-    // Additional validation: don't allow admin token to be set as user token
-    if (token) {
-      const adminToken = localStorage.getItem('adminToken');
-      if (token === adminToken) {
-        console.log('🚨 ERROR: Attempting to set admin token as user token, rejecting...');
-        return;
-      }
-    }
-    
     authToken = token;
-    // Clear admin token when setting regular user token
-    localStorage.removeItem('adminToken');
     if (token) {
       localStorage.setItem('authToken', token);
       console.log('✅ Token saved to localStorage');
