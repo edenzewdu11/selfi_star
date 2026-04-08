@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -55,18 +56,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-_db_host = config('DB_HOST', default='localhost')
-DATABASES = {
-    'default': {
-        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': config('DB_NAME', default='selfi_star'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='eden111310'),
-        'HOST': _db_host,
-        'PORT': config('DB_PORT', default='5432'),
-        'OPTIONS': {'sslmode': 'require'} if 'neon.tech' in _db_host else {},
+_DATABASE_URL = config('DATABASE_URL', default=None)
+if _DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(_DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    _db_host = config('DB_HOST', default='localhost')
+    DATABASES = {
+        'default': {
+            'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
+            'NAME': config('DB_NAME', default='selfi_star'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default='eden111310'),
+            'HOST': _db_host,
+            'PORT': config('DB_PORT', default='5432'),
+            'OPTIONS': {'sslmode': 'require'} if 'neon.tech' in _db_host else {},
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
