@@ -6,13 +6,13 @@ from api.models import Reel
 SAMPLE_REELS = [
     {
         'username': 'demo',
-        'image': 'https://picsum.photos/seed/reel1/400/700',
+        'image': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=700&fit=crop&auto=format',
         'media': None,
-        'caption': 'Beautiful sunset view 🌅 #nature #photography',
+        'caption': 'Beautiful mountain view 🌅 #nature #photography',
     },
     {
         'username': 'testuser',
-        'image': 'https://picsum.photos/seed/reel2/400/700',
+        'image': 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=700&fit=crop&auto=format',
         'media': None,
         'caption': 'City lights at night ✨ #city #nightlife',
     },
@@ -24,13 +24,13 @@ SAMPLE_REELS = [
     },
     {
         'username': 'testuser',
-        'image': 'https://picsum.photos/seed/reel3/400/700',
+        'image': 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&h=700&fit=crop&auto=format',
         'media': None,
         'caption': 'Morning vibes ☀️ #morning #lifestyle',
     },
     {
         'username': 'demo',
-        'image': 'https://picsum.photos/seed/reel4/400/700',
+        'image': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=700&fit=crop&auto=format',
         'media': None,
         'caption': 'Exploring new places 🗺️ #travel #adventure',
     },
@@ -42,13 +42,13 @@ SAMPLE_REELS = [
     },
     {
         'username': 'demo',
-        'image': 'https://picsum.photos/seed/reel5/400/700',
+        'image': 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=400&h=700&fit=crop&auto=format',
         'media': None,
         'caption': 'Good vibes only 💫 #positivity #happy',
     },
     {
         'username': 'testuser',
-        'image': 'https://picsum.photos/seed/reel6/400/700',
+        'image': 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&h=700&fit=crop&auto=format',
         'media': None,
         'caption': 'Creative shots 📸 #photography #art',
     },
@@ -59,10 +59,8 @@ class Command(BaseCommand):
     help = 'Seed sample reels with public image/video URLs'
 
     def handle(self, *args, **options):
-        if Reel.objects.count() >= len(SAMPLE_REELS):
-            self.stdout.write('Reels already seeded, skipping.')
-            return
-
+        Reel.objects.all().delete()
+        self.stdout.write('Cleared existing reels.')
         created = 0
         for item in SAMPLE_REELS:
             try:
