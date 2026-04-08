@@ -58,6 +58,9 @@ class ReelSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         if obj.image:
+            name = obj.image.name
+            if name and (name.startswith('http://') or name.startswith('https://')):
+                return name
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
@@ -66,6 +69,9 @@ class ReelSerializer(serializers.ModelSerializer):
     
     def get_media(self, obj):
         if obj.media:
+            name = obj.media.name
+            if name and (name.startswith('http://') or name.startswith('https://')):
+                return name
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.media.url)
