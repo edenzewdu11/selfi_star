@@ -55,14 +55,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+_db_host = config('DB_HOST', default='localhost')
 DATABASES = {
     'default': {
         'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
         'NAME': config('DB_NAME', default='selfi_star'),
         'USER': config('DB_USER', default='postgres'),
         'PASSWORD': config('DB_PASSWORD', default='eden111310'),
-        'HOST': config('DB_HOST', default='localhost'),
+        'HOST': _db_host,
         'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': {'sslmode': 'require'} if 'neon.tech' in _db_host else {},
     }
 }
 
