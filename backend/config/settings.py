@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver').split(',')
+RENDER_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME', default=None)
+ALLOWED_HOSTS = ['*'] if not RENDER_HOSTNAME else ['localhost', '127.0.0.1', RENDER_HOSTNAME]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -105,6 +106,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
