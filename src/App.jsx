@@ -1,22 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
+import { ModernSidebar } from './components/ModernSidebar'
 import { ModernLoginScreen } from "./components/ModernLoginScreen";
 import { ModernRegisterScreen } from "./components/ModernRegisterScreen";
-import { LandingPage } from "./components/LandingPage";
-import { TikTokLayout } from './components/TikTokLayout'
-import { HomePage } from './components/HomePage'
-import { EnhancedPostPage } from "./components/EnhancedPostPage";
-import { ModernSidebar } from './components/ModernSidebar'
-import { ProfilePage } from './components/ProfilePage'
-import { EditProfilePage } from './components/EditProfilePage'
-import { FollowersListPage } from './components/FollowersListPage'
-import { SettingsPage } from './components/SettingsPage'
-import { NotificationsPage } from './components/NotificationsPage'
-import { MessagingPage } from './components/MessagingPage'
-import { CampaignsPage } from './pages/CampaignsPage'
-import { CampaignDetailPage } from './pages/CampaignDetailPage'
-import { AdminApp } from './admin/AdminApp'
 import api from './api'
 import { debugTokens, clearTokenConfusion } from './tokenDebug'
+
+const LandingPage = lazy(() => import('./components/LandingPage').then(m => ({ default: m.LandingPage })));
+const TikTokLayout = lazy(() => import('./components/TikTokLayout').then(m => ({ default: m.TikTokLayout })));
+const HomePage = lazy(() => import('./components/HomePage').then(m => ({ default: m.HomePage })));
+const EnhancedPostPage = lazy(() => import('./components/EnhancedPostPage').then(m => ({ default: m.EnhancedPostPage })));
+const ProfilePage = lazy(() => import('./components/ProfilePage').then(m => ({ default: m.ProfilePage })));
+const EditProfilePage = lazy(() => import('./components/EditProfilePage').then(m => ({ default: m.EditProfilePage })));
+const FollowersListPage = lazy(() => import('./components/FollowersListPage').then(m => ({ default: m.FollowersListPage })));
+const SettingsPage = lazy(() => import('./components/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const NotificationsPage = lazy(() => import('./components/NotificationsPage').then(m => ({ default: m.NotificationsPage })));
+const MessagingPage = lazy(() => import('./components/MessagingPage').then(m => ({ default: m.MessagingPage })));
+const CampaignsPage = lazy(() => import('./pages/CampaignsPage').then(m => ({ default: m.CampaignsPage })));
+const CampaignDetailPage = lazy(() => import('./pages/CampaignDetailPage').then(m => ({ default: m.CampaignDetailPage })));
+const AdminApp = lazy(() => import('./admin/AdminApp').then(m => ({ default: m.AdminApp })));
 
 export default function WerqRoot() {
   // Check if accessing admin panel
@@ -276,8 +277,18 @@ export default function WerqRoot() {
     setShowLogin(true)
   }
 
+  const fallback = (
+    <div style={{ minHeight:"100vh", background:"#060D1F", display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ textAlign:"center" }}>
+        <div style={{ fontSize:36, marginBottom:12 }}>✨</div>
+        <div style={{ color:"#00D4E0", fontSize:14, fontWeight:600 }}>Loading...</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="App" style={{ minHeight: "100vh", position: "relative" }}>
+    <Suspense fallback={fallback}>
       {authUser && !showNotifications && !showMessages && (
         <ModernSidebar
           user={authUser}
@@ -540,6 +551,7 @@ export default function WerqRoot() {
           h3 { font-size: 1.1rem !important; }
         }
       `}</style>
+    </Suspense>
     </div>
   );
 }

@@ -4,112 +4,59 @@ let authToken = localStorage.getItem('authToken');
 
 // Validate token format - clear if invalid
 if (authToken && (authToken.length < 10 || authToken.includes('undefined') || authToken.includes('null'))) {
-  console.log('🔑 Invalid token format detected, clearing...');
   localStorage.removeItem('authToken');
   authToken = null;
 }
 
-console.log('🔑 Initial authToken loaded:', authToken ? authToken.substring(0, 10) + '...' : 'NONE');
-
 const api = {
   setAuthToken: (token) => {
-    console.log('🔑 setAuthToken called with:', token ? token.substring(0, 10) + '...' : 'NULL');
-    
     authToken = token;
     if (token) {
       localStorage.setItem('authToken', token);
-      console.log('✅ Token saved to localStorage');
     } else {
       localStorage.removeItem('authToken');
-      console.log('❌ Token removed from localStorage');
     }
   },
 
-  getToken: () => {
-    const currentToken = authToken;
-    console.log('🔍 getToken returning:', currentToken ? currentToken.substring(0, 10) + '...' : 'NONE');
-    return currentToken;
-  },
+  getToken: () => authToken,
 
   clearToken: () => {
-    console.log('🗑️ clearToken called');
     authToken = null;
     localStorage.removeItem('authToken');
     localStorage.removeItem('adminToken');
   },
 
   async request(endpoint, options = {}) {
-    console.log(`🌐 API Request: ${options.method || 'GET'} ${endpoint}`);
-    console.log(`🔑 Auth token available: ${!!authToken}`);
-    
-    const headers = {
-      ...options.headers,
-    };
-
-    // Don't set Content-Type for FormData - browser will set it with boundary
-    if (!options.isFormData) {
-      headers['Content-Type'] = 'application/json';
-    }
-
-    // Only add token if it exists AND it's not an auth endpoint
+    const headers = { ...options.headers };
+    if (!options.isFormData) headers['Content-Type'] = 'application/json';
     const currentToken = authToken;
     if (currentToken && !endpoint.includes('/auth/')) {
       headers['Authorization'] = `Token ${currentToken}`;
-      console.log(`🔐 Using token for request: ${currentToken.substring(0, 10)}...`);
-    } else {
-      console.log(`🔓 No token used for request: ${endpoint}`);
     }
 
-    console.log(`📤 Full request details:`, {
-      url: `${API_BASE_URL}${endpoint}`,
-      method: options.method || 'GET',
-      headers,
-      isFormData: options.isFormData
-    });
-
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
-
-    console.log(`📥 Response status: ${response.status} ${response.statusText}`);
-    console.log(`📥 Response headers:`, Object.fromEntries(response.headers.entries()));
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
 
     let data;
     const contentType = response.headers.get('content-type');
-    
     try {
       if (contentType && contentType.includes('application/json')) {
         data = await response.json();
-        console.log(`📦 Response data received, type: ${Array.isArray(data) ? 'array' : typeof data}, length: ${Array.isArray(data) ? data.length : 'N/A'}`);
       } else {
-        // Handle HTML error pages
         const text = await response.text();
-        console.error('Received HTML response instead of JSON:', text.substring(0, 200));
-        data = { error: 'Server returned HTML instead of JSON', status: response.status, html: text };
+        data = { error: 'Server returned HTML instead of JSON', status: response.status };
       }
     } catch (e) {
-      console.error('❌ Failed to parse response:', e);
       data = { error: 'Failed to parse response', status: response.status };
     }
 
     if (!response.ok) {
-      console.error('❌ API Error:', response.status, data);
-      // Log the full error object
-      console.error('❌ Full error response:', JSON.stringify(data, null, 2));
-      
-      // Auto-clear invalid token on 401 errors
       if (response.status === 401 && authToken) {
-        console.log('🔑 401 error detected, clearing invalid token...');
         authToken = null;
         localStorage.removeItem('authToken');
         localStorage.removeItem('adminToken');
       }
-      
       throw new Error(data.error || data.message || `API Error: ${response.status}`);
     }
-
-    console.log(`✅ API Request successful for ${endpoint}`);
     return data;
   },
 

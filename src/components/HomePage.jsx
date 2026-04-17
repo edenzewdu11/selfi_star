@@ -344,13 +344,15 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                         <video
                           src={mediaUrl}
                           style={{ width: "100%", maxHeight: 520, objectFit: "cover", display: "block" }}
-                          controls muted playsInline loop
+                          controls muted playsInline preload="none"
                           onError={e => { e.target.parentElement.style.display = "none"; }}
                         />
                       ) : (
                         <img
                           src={mediaUrl}
                           alt={caption}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: "100%", maxHeight: 520, objectFit: "cover", display: "block" }}
                           onError={e => { e.target.parentElement.style.display = "none"; }}
                         />
