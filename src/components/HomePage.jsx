@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, Check, ChevronDown } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, Check, Play } from "lucide-react";
 import api from "../api";
 import { useTheme } from "../contexts/ThemeContext";
 import { ModernCommentSection } from "./ModernCommentSection";
@@ -8,7 +8,7 @@ import { getRelativeTime } from "../utils/timeUtils";
 const TABS = ["For You", "Campaigns", "Categories"];
 const CATEGORIES = ["All", "Nature", "Sports", "Music", "Art", "Travel", "Food", "Fashion", "Tech"];
 
-export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }) {
+export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns, onSwitchToReels }) {
   const { colors: T } = useTheme();
   const [activeTab, setActiveTab] = useState("For You");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -338,33 +338,60 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                     </div>
                   </div>
 
-                  {/* Media */}
+                  {/* Media - consistent square aspect ratio */}
                   {mediaUrl && (
-                    <div style={{ position: "relative", width: "100%", background: "#000" }}>
+                    <div
+                      style={{ position: "relative", width: "100%", paddingTop: "100%", background: "#F3F4F6", cursor: isVideo(mediaUrl) ? "pointer" : "default" }}
+                      onClick={() => isVideo(mediaUrl) && onSwitchToReels?.()}
+                    >
                       {isVideo(mediaUrl) ? (
-                        <video
-                          src={mediaUrl}
-                          style={{ width: "100%", maxHeight: 520, objectFit: "cover", display: "block" }}
-                          controls muted playsInline preload="none"
-                          onError={e => { e.target.parentElement.style.display = "none"; }}
-                        />
+                        <>
+                          <video
+                            src={mediaUrl}
+                            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                            muted playsInline preload="metadata"
+                            onError={e => { e.target.closest('[data-media]').style.display = "none"; }}
+                          />
+                          {/* Play button overlay */}
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: "rgba(0,0,0,0.25)",
+                          }}>
+                            <div style={{
+                              width: 56, height: 56, borderRadius: "50%",
+                              background: "rgba(255,255,255,0.92)",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                            }}>
+                              <Play size={22} color="#111827" fill="#111827" style={{ marginLeft: 3 }} />
+                            </div>
+                          </div>
+                          {/* Reels badge */}
+                          <div style={{
+                            position: "absolute", top: 10, left: 10,
+                            background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
+                            borderRadius: 20, padding: "3px 10px",
+                            fontSize: 11, fontWeight: 700, color: "#fff",
+                            letterSpacing: "0.3px",
+                          }}>▶ Reel</div>
+                        </>
                       ) : (
                         <img
                           src={mediaUrl}
                           alt={caption}
                           loading="lazy"
                           decoding="async"
-                          style={{ width: "100%", maxHeight: 520, objectFit: "cover", display: "block" }}
+                          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                           onError={e => { e.target.parentElement.style.display = "none"; }}
                         />
                       )}
                       {/* View count overlay */}
                       <div style={{
                         position: "absolute", bottom: 10, right: 10,
-                        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
+                        background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)",
                         borderRadius: 20, padding: "4px 10px",
                         display: "flex", alignItems: "center", gap: 5,
-                        border: "1px solid rgba(255,255,255,0.1)",
                       }}>
                         <Eye size={12} color="#fff" />
                         <span style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>

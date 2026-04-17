@@ -76,7 +76,7 @@ def create_post(request):
         file = request.FILES.get('file')
         
         if not file:
-            print("❌ No file provided")
+            print("[ERROR] No file provided")
             return Response({'error': 'File is required'}, status=status.HTTP_400_BAD_REQUEST)
         
         print(f"Received file: {file.name}")
@@ -84,26 +84,26 @@ def create_post(request):
         print(f"File size: {file.size}")
         
         # Content moderation check
-        print(f"🔍 Starting content moderation check...")
+        print("[INFO] Starting content moderation check...")
         try:
             from .content_moderation import moderate_upload
             print(f"Checking file for post: {file.name}, type: {file.content_type}")
             is_safe, moderation_msg = moderate_upload(file)
-            print(f"📊 Moderation result: is_safe={is_safe}, msg={moderation_msg}")
+            print(f"[INFO] Moderation result: is_safe={is_safe}, msg={moderation_msg}")
             
             if not is_safe:
-                print(f"🚫 [ContentModeration] Post BLOCKED for user {request.user.username}: {moderation_msg}")
+                print(f"[BLOCKED] Post BLOCKED for user {request.user.username}: {moderation_msg}")
                 return Response({
                     'error': moderation_msg,
                     'moderation_blocked': True
                 }, status=status.HTTP_400_BAD_REQUEST)
-            print(f"✅ [ContentModeration] Post APPROVED for user {request.user.username}")
+            print(f"[OK] Post APPROVED for user {request.user.username}")
         except Exception as e:
-            print(f"❌ [ContentModeration] Error during post moderation: {e}")
+            print(f"[ERROR] Content moderation error: {e}")
             import traceback
             traceback.print_exc()
             # Allow post on moderation error to avoid blocking legitimate content
-            print(f"⚠️ [ContentModeration] Allowing post despite moderation error")
+            print("[WARN] Allowing post despite moderation error")
         
         # Determine if it's a video or image
         is_video = file.content_type.startswith('video/') or file.name.lower().endswith(('.mp4', '.webm', '.mov', '.avi'))
@@ -132,7 +132,7 @@ def create_post(request):
         profile.xp += 25
         profile.save()
         
-        print(f"✅ Created reel ID: {reel.id}")
+        print(f"[OK] Created reel ID: {reel.id}")
         print(f"Reel user: {reel.user.username}")
         print(f"Reel media: {reel.media.name if reel.media else None}")
         print(f"Reel image: {reel.image.name if reel.image else None}")
@@ -144,7 +144,7 @@ def create_post(request):
         return Response(response_data, status=status.HTTP_201_CREATED)
         
     except Exception as e:
-        print(f"❌ Exception in create_post: {e}")
+        print(f"[ERROR] Exception in create_post: {e}")
         import traceback
         traceback.print_exc()
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -411,6 +411,7 @@ export default function WerqRoot() {
           onShowProfile={handleShowProfile}
           onRequireAuth={handleRequireAuth}
           onShowCampaigns={handleShowCampaigns}
+          onSwitchToReels={() => startTransition(() => { resetAllPages(); setActiveTab('reels'); })}
         />
       ) : showPostPage ? (
         <EnhancedPostPage user={authUser} onBack={() => setShowPostPage(false)} />
