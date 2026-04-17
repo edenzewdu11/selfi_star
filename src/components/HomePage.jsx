@@ -402,59 +402,82 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns, 
                   )}
 
                   {/* Actions */}
-                  <div style={{ padding: "12px 16px 0" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                  <div style={{ padding: "14px 16px 16px" }}>
+                    {/* Action buttons row */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        {/* Like */}
                         <button
                           onClick={() => handleLike(post.id)}
+                          onMouseEnter={e => { if (!isLiked) { e.currentTarget.querySelector('svg').style.color = "#EF4444"; e.currentTarget.querySelector('svg').style.stroke = "#EF4444"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; }}}
+                          onMouseLeave={e => { if (!isLiked) { e.currentTarget.querySelector('svg').style.color = "#9CA3AF"; e.currentTarget.querySelector('svg').style.stroke = "#9CA3AF"; e.currentTarget.style.background = "transparent"; }}}
                           style={{
-                            background: "none", border: "none", cursor: "pointer", padding: 0,
-                            display: "flex", alignItems: "center", gap: 6,
-                            color: isLiked ? "#EF4444" : "#9CA3AF",
-                            transition: "all 0.2s",
+                            background: "transparent", border: "none", cursor: "pointer",
+                            padding: "8px 10px", borderRadius: 10,
+                            display: "flex", alignItems: "center", gap: 0,
+                            transition: "background 0.18s",
                           }}
                         >
-                          <Heart
-                            size={22}
-                            fill={isLiked ? "#EF4444" : "none"}
-                            color={isLiked ? "#EF4444" : "#9CA3AF"}
-                          />
+                          <Heart size={24} fill={isLiked ? "#EF4444" : "none"} color={isLiked ? "#EF4444" : "#9CA3AF"}
+                            style={{ transition: "all 0.18s", transform: isLiked ? "scale(1.15)" : "scale(1)" }} />
                         </button>
+
+                        {/* Comment */}
                         <button
-                          onClick={() => {
-                            if (!user) { onRequireAuth?.(); return; }
-                            setShowComments(showComments === post.id ? null : post.id);
+                          onClick={() => { if (!user) { onRequireAuth?.(); return; } setShowComments(showComments === post.id ? null : post.id); }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.08)"; e.currentTarget.querySelector('svg').style.color = "#7C3AED"; e.currentTarget.querySelector('svg').style.stroke = "#7C3AED"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector('svg').style.color = "#9CA3AF"; e.currentTarget.querySelector('svg').style.stroke = "#9CA3AF"; }}
+                          style={{
+                            background: "transparent", border: "none", cursor: "pointer",
+                            padding: "8px 10px", borderRadius: 10,
+                            display: "flex", alignItems: "center",
+                            transition: "background 0.18s",
                           }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9CA3AF" }}
                         >
-                          <MessageCircle size={22} />
+                          <MessageCircle size={24} color="#9CA3AF" style={{ transition: "all 0.18s" }} />
                         </button>
+
+                        {/* Share */}
                         <button
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9CA3AF" }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(124,58,237,0.08)"; e.currentTarget.querySelector('svg').style.color = "#7C3AED"; e.currentTarget.querySelector('svg').style.stroke = "#7C3AED"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector('svg').style.color = "#9CA3AF"; e.currentTarget.querySelector('svg').style.stroke = "#9CA3AF"; }}
+                          style={{
+                            background: "transparent", border: "none", cursor: "pointer",
+                            padding: "8px 10px", borderRadius: 10,
+                            display: "flex", alignItems: "center",
+                            transition: "background 0.18s",
+                          }}
                         >
-                          <Share2 size={20} />
+                          <Share2 size={22} color="#9CA3AF" style={{ transition: "all 0.18s" }} />
                         </button>
                       </div>
+
+                      {/* Bookmark */}
                       <button
                         onClick={() => handleSave(post.id)}
+                        onMouseEnter={e => { if (!isSaved) { e.currentTarget.style.background = "rgba(245,158,11,0.08)"; e.currentTarget.querySelector('svg').style.color = "#F59E0B"; e.currentTarget.querySelector('svg').style.stroke = "#F59E0B"; }}}
+                        onMouseLeave={e => { if (!isSaved) { e.currentTarget.style.background = "transparent"; e.currentTarget.querySelector('svg').style.color = "#9CA3AF"; e.currentTarget.querySelector('svg').style.stroke = "#9CA3AF"; }}}
                         style={{
-                          background: "none", border: "none", cursor: "pointer", padding: 0,
-                          color: isSaved ? "#F59E0B" : "#9CA3AF",
+                          background: "transparent", border: "none", cursor: "pointer",
+                          padding: "8px 10px", borderRadius: 10,
+                          display: "flex", alignItems: "center",
+                          transition: "background 0.18s",
                         }}
                       >
-                        <Bookmark size={22} fill={isSaved ? "#F59E0B" : "none"} color={isSaved ? "#F59E0B" : "#9CA3AF"} />
+                        <Bookmark size={24} fill={isSaved ? "#F59E0B" : "none"} color={isSaved ? "#F59E0B" : "#9CA3AF"}
+                          style={{ transition: "all 0.18s" }} />
                       </button>
                     </div>
 
                     {/* Like count */}
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 6 }}>
-                      {formatCount(likeCount)} likes
+                    <div style={{ fontSize: 14, fontWeight: 800, color: "#111827", marginBottom: 5, letterSpacing: "-0.01em" }}>
+                      {likeCount.toLocaleString()} likes
                     </div>
 
-                    {/* Caption */}
+                    {/* Caption — username bold inline */}
                     {caption && (
-                      <div style={{ fontSize: 14, color: "#374151", marginBottom: 6, lineHeight: 1.5 }}>
-                        <span style={{ fontWeight: 700, color: "#111827", marginRight: 6 }}>{username}</span>
+                      <div style={{ fontSize: 14, color: "#374151", marginBottom: 6, lineHeight: 1.55 }}>
+                        <span style={{ fontWeight: 800, color: "#111827", marginRight: 5, letterSpacing: "-0.01em" }}>{username}</span>
                         {caption}
                       </div>
                     )}
@@ -462,28 +485,36 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns, 
                     {/* View all comments */}
                     {commentCount > 0 && (
                       <button
-                        onClick={() => {
-                          if (!user) { onRequireAuth?.(); return; }
-                          setShowComments(showComments === post.id ? null : post.id);
-                        }}
+                        onClick={() => { if (!user) { onRequireAuth?.(); return; } setShowComments(showComments === post.id ? null : post.id); }}
+                        onMouseEnter={e => e.currentTarget.style.color = "#6D28D9"}
+                        onMouseLeave={e => e.currentTarget.style.color = "#7C3AED"}
                         style={{
                           background: "none", border: "none", cursor: "pointer", padding: 0,
-                          color: "#6B7280", fontSize: 13, marginBottom: 6,
+                          color: "#7C3AED", fontSize: 13, fontWeight: 600, marginBottom: 8,
+                          display: "block", transition: "color 0.15s",
                         }}
                       >
-                        View all {commentCount} comments
+                        View all {commentCount.toLocaleString()} comments
                       </button>
                     )}
 
-                    {/* Hashtags */}
+                    {/* Hashtag pills */}
                     {hashtags.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, paddingBottom: 14 }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: commentCount > 0 ? 0 : 6 }}>
                         {hashtags.map((tag, i) => (
-                          <span key={i} style={{ fontSize: 13, color: "#7C3AED", fontWeight: 500 }}>{tag}</span>
+                          <span key={i} style={{
+                            fontSize: 12, fontWeight: 600, color: "#7C3AED",
+                            background: "rgba(124,58,237,0.08)",
+                            border: "1px solid rgba(124,58,237,0.18)",
+                            borderRadius: 20, padding: "3px 10px",
+                            cursor: "pointer", transition: "all 0.15s",
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "#7C3AED"; e.currentTarget.style.color = "#fff"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "rgba(124,58,237,0.08)"; e.currentTarget.style.color = "#7C3AED"; }}
+                          >{tag}</span>
                         ))}
                       </div>
                     )}
-                    {hashtags.length === 0 && <div style={{ paddingBottom: 14 }} />}
                   </div>
 
                   {/* Inline comment section */}
