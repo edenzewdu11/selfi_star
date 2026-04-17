@@ -873,7 +873,7 @@ const handleFileSelect = async (e) => {
   };
 
   const renderConversationList = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#EEF2F8" }}>
       <div style={{
         padding: "16px 20px",
         borderBottom: `1px solid ${T.border}`,
@@ -1039,7 +1039,7 @@ const handleFileSelect = async (e) => {
             100% { transform: rotate(360deg); }
           }
         `}</style>
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
+        <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#EEF2F8" }}>
         <div style={{
           padding: "16px 20px",
           borderBottom: `1px solid ${T.border}`,
@@ -1152,16 +1152,17 @@ const handleFileSelect = async (e) => {
   };
 
   const renderChat = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)", position: "relative" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#EEF2F8", position: "relative" }}>
       <div style={{
         padding: "12px 20px",
         borderBottom: `1px solid ${T.border}`,
         display: "flex",
         alignItems: "center",
         gap: 12,
-        background: "rgba(6,13,31,0.95)",
+        background: "rgba(255,255,255,0.95)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
+        boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
       }}>
         <button onClick={() => setView("list")} style={{
           background: "none",
@@ -1526,9 +1527,10 @@ const handleFileSelect = async (e) => {
                           position: "absolute",
                           top: "100%",
                           [isOwn ? "right" : "left"]: 0,
-                          background: "rgba(10,22,40,0.95)",
+                          background: "#FFFFFF",
                           backdropFilter: "blur(16px)",
-                          border: "1px solid rgba(0,212,224,0.2)",
+                          border: "1px solid rgba(0,0,0,0.08)",
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
                           borderRadius: 8,
                           boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
                           zIndex: 1000,
@@ -1904,8 +1906,9 @@ const handleFileSelect = async (e) => {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        background: "rgba(6,13,31,0.95)",
-        borderTop: "1px solid rgba(0,212,224,0.15)",
+        background: "rgba(255,255,255,0.95)",
+        borderTop: "1px solid rgba(0,0,0,0.08)",
+        boxShadow: "0 -2px 8px rgba(0,0,0,0.04)",
       }}>
         <input
           type="file"
@@ -2200,7 +2203,7 @@ const handleFileSelect = async (e) => {
   }
 
   const renderCallHistory = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#EEF2F8" }}>
       <div style={{
         padding: "16px 20px",
         borderBottom: `1px solid ${T.border}`,

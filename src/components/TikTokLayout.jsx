@@ -762,7 +762,7 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
           }
         }
       `}</style>
-      <div style={{ display: "flex", height: "100vh", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
+      <div style={{ display: "flex", height: "100vh", background: "#EEF2F8" }}>
       {/* LEFT SIDEBAR - Navigation - Hidden on mobile */}
       <div style={{
         width: 250,
@@ -773,8 +773,9 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         left: 0,
         top: 0,
         height: "100vh",
-        background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
-        boxShadow: "4px 0 20px rgba(0,0,0,0.4)",
+        background: "#FFFFFF",
+        boxShadow: "2px 0 12px rgba(0,0,0,0.08)",
+        borderRight: "1px solid rgba(0,0,0,0.07)",
         display: "none",
       }}
       className="desktop-tiktok-sidebar"
@@ -877,7 +878,7 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
               boxShadow: '0 4px 20px rgba(255,215,0,0.4)',
               border: "none",
               borderRadius: 12,
-              color: "#0A1628",
+              color: "#FFFFFF",
               fontSize: 14,
               fontWeight: 800,
               cursor: "pointer",
@@ -976,7 +977,7 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         flexDirection: "column",
         alignItems: "center",
         padding: "20px 0",
-        background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
+        background: "#EEF2F8",
         minHeight: "100vh",
       }}>
         {/* Feed Header */}
@@ -1037,8 +1038,8 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
               </div>
             ) : videos.length === 0 ? (
               <div style={{
-                background: "rgba(10,22,40,0.7)",
-                backdropFilter: "blur(20px)",
+                background: "#FFFFFF",
+                border: "1px solid rgba(0,0,0,0.06)",
                 borderRadius: 20,
                 padding: 60,
                 textAlign: "center",
@@ -1193,10 +1194,11 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                           position: "absolute",
                           top: 48,
                           right: 0,
-                          background: "rgba(10,22,40,0.95)",
+                          background: "#FFFFFF",
                           backdropFilter: "blur(20px)",
                           WebkitBackdropFilter: "blur(20px)",
-                          border: "1px solid rgba(0,212,224,0.2)",
+                          border: "1px solid rgba(0,0,0,0.08)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
                           borderRadius: 12,
                           boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
                           minWidth: 180,
@@ -1599,8 +1601,8 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         right: 0,
         top: 0,
         height: "100vh",
-        background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
-        borderLeft: "1px solid rgba(0,212,224,0.15)",
+        background: "#FFFFFF",
+        borderLeft: "1px solid rgba(0,0,0,0.07)",
         display: "none",
       }}>
         {/* User Suggestions */}
@@ -1672,9 +1674,10 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         >
           <div
             style={{
-              background: "rgba(10,22,40,0.95)",
+              background: "#FFFFFF",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(0,212,224,0.2)",
+              border: "1px solid rgba(0,0,0,0.08)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
               borderRadius: 16,
               padding: "24px",
               maxWidth: 400,
