@@ -1,7 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useTransition, lazy, Suspense } from 'react'
 import { ModernSidebar } from './components/ModernSidebar'
 import { ModernLoginScreen } from "./components/ModernLoginScreen";
 import { ModernRegisterScreen } from "./components/ModernRegisterScreen";
+import { AdminApp } from './admin/AdminApp'
 import api from './api'
 import { debugTokens, clearTokenConfusion } from './tokenDebug'
 
@@ -17,7 +18,6 @@ const NotificationsPage = lazy(() => import('./components/NotificationsPage').th
 const MessagingPage = lazy(() => import('./components/MessagingPage').then(m => ({ default: m.MessagingPage })));
 const CampaignsPage = lazy(() => import('./pages/CampaignsPage').then(m => ({ default: m.CampaignsPage })));
 const CampaignDetailPage = lazy(() => import('./pages/CampaignDetailPage').then(m => ({ default: m.CampaignDetailPage })));
-const AdminApp = lazy(() => import('./admin/AdminApp').then(m => ({ default: m.AdminApp })));
 
 export default function WerqRoot() {
   // Check if accessing admin panel
@@ -43,6 +43,7 @@ export default function WerqRoot() {
   const [showCampaigns, setShowCampaigns] = useState(false)
   const [showCampaignDetail, setShowCampaignDetail] = useState(false)
   const [campaignId, setCampaignId] = useState(null)
+  const [, startTransition] = useTransition()
 
   // Function to reset all special page states
   const resetAllPages = () => {
@@ -63,9 +64,7 @@ export default function WerqRoot() {
     debugTokens();
     
     // Clear any token confusion
-    if (clearTokenConfusion()) {
-      console.log('🔧 Token confusion was detected and cleared');
-    }
+    clearTokenConfusion();
     
     const savedUser = localStorage.getItem('user');
     const savedToken = localStorage.getItem('authToken');
@@ -83,9 +82,7 @@ export default function WerqRoot() {
       api.getProfile().then(profile => {
         // Verify the profile matches what we expect
         if (profile.user && profile.user.username === 'admin' && !window.location.pathname.includes('/admin')) {
-          console.warn('⚠️ WARNING: Admin token detected in regular app!');
-          console.warn('This may cause messages to appear as from admin instead of the actual user');
-          console.warn('Please log out and log back in with the correct account');
+          console.warn('Admin token detected in regular app - please log out and back in.');
         }
         setAuthUser(profile.user);
         localStorage.setItem('user', JSON.stringify(profile.user));
@@ -297,8 +294,10 @@ export default function WerqRoot() {
             if (tab === 'messages') {
               handleShowMessages()
             } else {
-              resetAllPages()
-              setActiveTab(tab)
+              startTransition(() => {
+                resetAllPages()
+                setActiveTab(tab)
+              })
             }
           }}
           onShowPostPage={handleShowPostPage}
