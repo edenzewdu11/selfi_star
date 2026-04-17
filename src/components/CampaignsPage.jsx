@@ -88,90 +88,94 @@ export function CampaignsPage({ theme, onCampaignClick }) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: T.bg }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🏆</div>
-          <div style={{ color: T.sub }}>Loading campaigns...</div>
+          <Trophy size={48} color={T.pri} style={{ marginBottom: 16 }} />
+          <div style={{ color: T.sub, fontWeight: 600 }}>Loading campaigns...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: T.bg, padding: 20 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Trophy size={32} style={{ color: T.pri }} />
-          <h1 style={{ color: T.txt, fontSize: 28, fontWeight: 800, margin: 0 }}>
-            Campaigns & Contests
-          </h1>
+    <div style={{ minHeight: '100vh', background: T.bg }}>
+      {/* Sticky Header */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        padding: '16px 24px',
+        boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12,
+            background: 'linear-gradient(135deg, #7C3AED, #4F46E5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
+          }}>
+            <Trophy size={20} color="#fff" />
+          </div>
+          <div>
+            <h1 style={{ color: T.txt, fontSize: 20, fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>Campaigns</h1>
+            <p style={{ color: T.sub, fontSize: 13, margin: 0 }}>Win amazing rewards!</p>
+          </div>
         </div>
-        <p style={{ color: T.sub, fontSize: 16, margin: 0 }}>
-          Participate in exciting campaigns and win amazing rewards!
-        </p>
       </div>
+
+      <div style={{ padding: '24px 20px', maxWidth: 900, margin: '0 auto' }}>
 
       {/* User Coins Balance */}
       {userCoins && (
         <div style={{
-          background: `linear-gradient(135deg, ${T.pri}, ${T.dark})`,
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 32,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          background: 'linear-gradient(135deg, #7C3AED, #4F46E5)',
+          borderRadius: 16, padding: '20px 24px', marginBottom: 24,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          boxShadow: '0 8px 24px rgba(124,58,237,0.3)',
         }}>
           <div>
-            <div style={{ color: '#fff', fontSize: 14, opacity: 0.9, marginBottom: 4 }}>Your Balance</div>
-            <div style={{ color: '#fff', fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Coins size={24} />
-              {userCoins.balance.toLocaleString()} Coins
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, marginBottom: 4, fontWeight: 500 }}>Your Balance</div>
+            <div style={{ color: '#fff', fontSize: 26, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8, letterSpacing: '-0.02em' }}>
+              <Coins size={22} />{userCoins.balance.toLocaleString()} Coins
             </div>
-            <div style={{ color: '#fff', fontSize: 12, opacity: 0.8, marginTop: 4 }}>
+            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 4, fontWeight: 500 }}>
               {userCoins.subscription_type.toUpperCase()} Plan
             </div>
           </div>
           <button
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: 8,
-              padding: '8px 16px',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
+              background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)',
+              borderRadius: 10, padding: '10px 18px', color: '#fff',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
             }}
             onClick={() => window.location.href = '#/coins'}
-          >
-            Get More Coins
-          </button>
+          >Get More Coins</button>
         </div>
       )}
 
       {/* Campaigns Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
         {campaigns.map((campaign) => (
           <div
             key={campaign.id}
             style={{
-              background: T.card,
-              border: `1px solid ${T.border}`,
-              borderRadius: 16,
+              background: '#FFFFFF',
+              border: '1px solid rgba(0,0,0,0.07)',
+              borderRadius: 20,
               overflow: 'hidden',
               transition: 'transform 0.2s, box-shadow 0.2s',
               cursor: 'pointer',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
             }}
             onClick={() => onCampaignClick && onCampaignClick(campaign.id)}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
+              e.currentTarget.style.boxShadow = '0 12px 32px rgba(124,58,237,0.15)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)';
             }}
           >
             {/* Campaign Image */}
@@ -224,12 +228,12 @@ export function CampaignsPage({ theme, onCampaignClick }) {
               </div>
 
               {/* Title */}
-              <h3 style={{ color: T.txt, fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>
+              <h3 style={{ color: '#111827', fontSize: 17, fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.01em' }}>
                 {campaign.title}
               </h3>
 
               {/* Description */}
-              <p style={{ color: T.sub, fontSize: 14, margin: '0 0 16px 0', lineHeight: 1.5 }}>
+              <p style={{ color: '#6B7280', fontSize: 13, margin: '0 0 16px 0', lineHeight: 1.55 }}>
                 {campaign.description}
               </p>
 
@@ -267,19 +271,17 @@ export function CampaignsPage({ theme, onCampaignClick }) {
               {/* Action Button */}
               <button
                 style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: campaign.is_active_status ? T.pri : T.sub,
-                  border: 'none',
-                  borderRadius: 8,
-                  color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 600,
+                  width: '100%', padding: '12px',
+                  background: campaign.is_active_status
+                    ? 'linear-gradient(135deg, #7C3AED, #4F46E5)'
+                    : 'rgba(0,0,0,0.06)',
+                  border: 'none', borderRadius: 12,
+                  color: campaign.is_active_status ? '#fff' : '#9CA3AF',
+                  fontSize: 14, fontWeight: 700,
                   cursor: campaign.is_active_status ? 'pointer' : 'not-allowed',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  boxShadow: campaign.is_active_status ? '0 4px 12px rgba(124,58,237,0.3)' : 'none',
+                  transition: 'all 0.2s',
                 }}
                 disabled={!campaign.is_active_status}
                 onClick={(e) => {
@@ -306,15 +308,12 @@ export function CampaignsPage({ theme, onCampaignClick }) {
       {/* Empty State */}
       {campaigns.length === 0 && (
         <div style={{ textAlign: 'center', padding: 60 }}>
-          <Trophy size={64} style={{ color: T.sub, marginBottom: 16 }} />
-          <h3 style={{ color: T.txt, fontSize: 20, fontWeight: 600, marginBottom: 8 }}>
-            No Active Campaigns
-          </h3>
-          <p style={{ color: T.sub, fontSize: 16 }}>
-            Check back soon for new exciting campaigns and contests!
-          </p>
+          <Trophy size={56} color="#D1D5DB" style={{ marginBottom: 16 }} />
+          <h3 style={{ color: '#111827', fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.01em' }}>No Active Campaigns</h3>
+          <p style={{ color: '#6B7280', fontSize: 15 }}>Check back soon for exciting campaigns!</p>
         </div>
       )}
+      </div>
     </div>
   );
 }
