@@ -47,13 +47,13 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
         position: "fixed",
         left: 0,
         top: 0,
-        background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
-        borderRight: "1px solid rgba(0,212,224,0.15)",
+        background: "#FFFFFF",
+        borderRight: "1px solid rgba(0,0,0,0.08)",
         display: "flex",
         flexDirection: "column",
         padding: "20px 10px",
         zIndex: 100,
-        boxShadow: "4px 0 24px rgba(0,0,0,0.4)",
+        boxShadow: "2px 0 12px rgba(0,0,0,0.06)",
       }}
       className="desktop-sidebar"
       >
@@ -152,7 +152,7 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
           onClick={() => setIsMobileMenuOpen(false)}
         >
           {/* Mobile Sidebar */}
-          <div style={{ width:280, height:"100vh", position:"fixed", left:0, top:0, background:"linear-gradient(180deg, #060D1F 0%, #0A1628 100%)", borderRight:"1px solid rgba(0,212,224,0.15)", display:"flex", flexDirection:"column", padding:"20px 12px", zIndex:201, boxShadow:"4px 0 30px rgba(0,0,0,0.6)" }}
+          <div style={{ width:280, height:"100vh", position:"fixed", left:0, top:0, background:"#FFFFFF", borderRight:"1px solid rgba(0,0,0,0.08)", display:"flex", flexDirection:"column", padding:"20px 12px", zIndex:201, boxShadow:"4px 0 20px rgba(0,0,0,0.08)" }}
             className="mobile-sidebar" onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setIsMobileMenuOpen(false)} style={{ position:"absolute", top:16, right:12, width:32, height:32, border:"1px solid rgba(0,212,224,0.2)", background:"rgba(0,212,224,0.1)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:8, color:"#00D4E0" }}>
               <X size={18} />
@@ -189,13 +189,13 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
       {/* Mobile Bottom Navigation */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0, height: 65,
-        background: "rgba(6,13,31,0.97)",
+        background: "rgba(255,255,255,0.97)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid rgba(0,212,224,0.2)",
+        borderTop: "1px solid rgba(0,0,0,0.08)",
         display: "none", alignItems: "center", justifyContent: "space-around",
         padding: "0 8px", zIndex: 100,
-        boxShadow: "0 -4px 20px rgba(0,0,0,0.4)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.06)",
       }} className="mobile-nav">
         {/* Home */}
         {[
@@ -210,9 +210,9 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
               border:"none", background:"transparent", cursor:"pointer", padding:6, flex:1,
               position:"relative",
             }}>
-              {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #00D4E0, #0891B2)", borderRadius:2 }} />}
-              <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
-              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#00D4E0" : "#7ABFCC", letterSpacing:"0.3px" }}>{item.label}</span>
+              {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #7C3AED, #4F46E5)", borderRadius:2 }} />}
+              <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#7C3AED" : "#9CA3AF"} />
+              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#7C3AED" : "#9CA3AF", letterSpacing:"0.3px" }}>{item.label}</span>
             </button>
           );
         })}
@@ -249,9 +249,9 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
               border:"none", background:"transparent", cursor:"pointer", padding:6, flex:1,
               position:"relative",
             }}>
-              {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #00D4E0, #0891B2)", borderRadius:2 }} />}
-              <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
-              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#00D4E0" : "#7ABFCC", letterSpacing:"0.3px" }}>{item.label}</span>
+              {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #7C3AED, #4F46E5)", borderRadius:2 }} />}
+              <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#7C3AED" : "#9CA3AF"} />
+              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#7C3AED" : "#9CA3AF", letterSpacing:"0.3px" }}>{item.label}</span>
             </button>
           );
         })}
