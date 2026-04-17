@@ -46,6 +46,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class ReelSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     comment_count = serializers.SerializerMethodField()
+    share_count = serializers.SerializerMethodField()
     hashtags_list = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
@@ -54,7 +55,7 @@ class ReelSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Reel
-        fields = ['id', 'user', 'image', 'media', 'caption', 'hashtags', 'hashtags_list', 'votes', 'comment_count', 'created_at', 'is_liked', 'is_saved']
+        fields = ['id', 'user', 'image', 'media', 'caption', 'hashtags', 'hashtags_list', 'votes', 'comment_count', 'share_count', 'created_at', 'is_liked', 'is_saved']
     
     def get_image(self, obj):
         if obj.image:
@@ -80,6 +81,9 @@ class ReelSerializer(serializers.ModelSerializer):
     
     def get_comment_count(self, obj):
         return obj.comments.count()
+
+    def get_share_count(self, obj):
+        return obj.shares.count()
     
     def get_hashtags_list(self, obj):
         return obj.get_hashtags_list()
