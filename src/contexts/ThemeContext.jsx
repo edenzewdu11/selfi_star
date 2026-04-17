@@ -14,32 +14,32 @@ export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    document.body.style.background = 'linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)';
-    document.body.style.color = '#FFFFFF';
+    document.body.style.background = '#EEF2F8';
+    document.body.style.color = '#111827';
   }, []);
 
   const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   const DARK = {
-    pri: "#00D4E0",
-    priD: "#0891B2",
-    priL: "rgba(0,212,224,0.15)",
-    sec: "#FFD700",
-    secM: "#F5A623",
-    secL: "rgba(255,215,0,0.15)",
-    gold: "#FFD700",
-    goldD: "#F5A623",
-    grn: "#00E5A0",
-    red: "#FF4B6E",
-    purple: "#A855F7",
-    txt: "#FFFFFF",
-    sub: "#7ABFCC",
-    bg: "#060D1F",
-    cardBg: "rgba(10,22,40,0.85)",
-    border: "rgba(0,212,224,0.2)",
-    dark: "#020810",
-    inputBg: "rgba(0,20,50,0.6)",
-    navBg: "rgba(6,13,31,0.95)",
+    pri: "#7C3AED",
+    priD: "#6D28D9",
+    priL: "rgba(124,58,237,0.1)",
+    sec: "#F59E0B",
+    secM: "#D97706",
+    secL: "rgba(245,158,11,0.1)",
+    gold: "#F59E0B",
+    goldD: "#D97706",
+    grn: "#10B981",
+    red: "#EF4444",
+    purple: "#7C3AED",
+    txt: "#111827",
+    sub: "#6B7280",
+    bg: "#EEF2F8",
+    cardBg: "#FFFFFF",
+    border: "rgba(0,0,0,0.08)",
+    dark: "#1F2937",
+    inputBg: "#F9FAFB",
+    navBg: "rgba(255,255,255,0.95)",
   };
 
   const theme = {

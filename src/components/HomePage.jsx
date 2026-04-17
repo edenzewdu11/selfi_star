@@ -86,15 +86,16 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
   return (
     <div className="home-page-root" style={{
       minHeight: "100vh",
-      background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
+      background: "#EEF2F8",
       boxSizing: "border-box",
     }}>
       {/* Sponsor Header */}
       <div style={{
         position: "sticky", top: 0, zIndex: 200,
-        background: "rgba(6,13,31,0.97)",
+        background: "rgba(255,255,255,0.95)",
         backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0,212,224,0.15)",
+        borderBottom: "1px solid rgba(0,0,0,0.08)",
+        boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
         padding: "0 24px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         height: 60,
@@ -107,7 +108,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 14, fontWeight: 900, color: "#fff",
           }}>ET</div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#7ABFCC" }}>Ethio Telecom</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#1E40AF" }}>Ethio Telecom</span>
         </div>
 
         {/* Center: App brand + notification */}
@@ -139,7 +140,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
 
         {/* Right sponsor */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#7ABFCC" }}>SkyKin</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#1E40AF" }}>SkyKin</span>
           <div style={{
             width: 32, height: 32, borderRadius: 8,
             background: "linear-gradient(135deg, #1E40AF, #3B82F6)",
@@ -155,8 +156,9 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
         {/* Tab Navigation */}
         <div style={{
           display: "flex", gap: 4, marginBottom: 20,
-          background: "rgba(10,22,40,0.6)", borderRadius: 14,
-          padding: 4, border: "1px solid rgba(0,212,224,0.12)",
+          background: "#F7F8FA", borderRadius: 14,
+          padding: 4, border: "1px solid rgba(0,0,0,0.08)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         }}>
           {TABS.map(tab => (
             <button
@@ -170,10 +172,10 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                 borderRadius: 10, border: "none", cursor: "pointer",
                 fontSize: 13, fontWeight: 700,
                 background: activeTab === tab
-                  ? "linear-gradient(135deg, #7C3AED 0%, #00D4E0 100%)"
+                  ? "linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)"
                   : "transparent",
-                color: activeTab === tab ? "#fff" : "#7ABFCC",
-                boxShadow: activeTab === tab ? "0 4px 16px rgba(124,58,237,0.4)" : "none",
+                color: activeTab === tab ? "#fff" : "#6B7280",
+                boxShadow: activeTab === tab ? "0 4px 16px rgba(124,58,237,0.25)" : "none",
                 transition: "all 0.2s",
               }}
             >{tab}</button>
@@ -195,12 +197,12 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                   flexShrink: 0,
                   padding: "6px 14px", borderRadius: 20,
                   border: activeCategory === cat
-                    ? "1px solid rgba(0,212,224,0.6)"
-                    : "1px solid rgba(0,212,224,0.15)",
+                    ? "1px solid #7C3AED"
+                    : "1px solid rgba(0,0,0,0.12)",
                   background: activeCategory === cat
-                    ? "rgba(0,212,224,0.15)"
-                    : "rgba(10,22,40,0.5)",
-                  color: activeCategory === cat ? "#00D4E0" : "#7ABFCC",
+                    ? "#7C3AED"
+                    : "#fff",
+                  color: activeCategory === cat ? "#fff" : "#6B7280",
                   fontSize: 12, fontWeight: 600, cursor: "pointer",
                   transition: "all 0.2s",
                 }}
@@ -213,17 +215,17 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>✨</div>
-            <div style={{ color: "#7ABFCC", fontSize: 14 }}>Loading posts...</div>
+            <div style={{ color: "#7C3AED", fontSize: 14 }}>Loading posts...</div>
           </div>
         ) : posts.length === 0 ? (
           <div style={{
             textAlign: "center", padding: 60,
-            background: "rgba(10,22,40,0.6)", borderRadius: 20,
-            border: "1px solid rgba(0,212,224,0.1)",
+            background: "#fff", borderRadius: 20,
+            border: "1px solid rgba(0,0,0,0.06)",
           }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📸</div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No posts yet</div>
-            <div style={{ color: "#7ABFCC", fontSize: 14 }}>Be the first to share something!</div>
+            <div style={{ color: "#111827", fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No posts yet</div>
+            <div style={{ color: "#6B7280", fontSize: 14 }}>Be the first to share something!</div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -244,21 +246,20 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                 <div
                   key={post.id}
                   style={{
-                    background: "rgba(10,22,40,0.85)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(0,212,224,0.12)",
+                    background: "#ffffff",
+                    border: "1px solid rgba(0,0,0,0.06)",
                     borderRadius: 20,
                     overflow: "hidden",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
                     transition: "transform 0.2s, box-shadow 0.2s",
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,224,0.2)";
+                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.14)";
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.3)";
+                    e.currentTarget.style.boxShadow = "0 2px 16px rgba(0,0,0,0.08)";
                   }}
                 >
                   {/* Post Header */}
@@ -267,7 +268,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                     padding: "14px 16px",
                   }}>
                     <div
-                      style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
+                      style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", flex: 1 }}
                       onClick={() => onShowProfile?.(post.user?.id)}
                     >
                       {avatarUrl ? (
@@ -286,7 +287,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                       )}
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF" }}>{username}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{username}</span>
                           {isVerified && (
                             <div style={{
                               width: 16, height: 16, borderRadius: "50%",
@@ -297,7 +298,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                             </div>
                           )}
                         </div>
-                        <div style={{ fontSize: 11, color: "#7ABFCC", marginTop: 1 }}>
+                        <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>
                           {post.created_at ? getRelativeTime(post.created_at) : "Recently"}
                         </div>
                       </div>
@@ -307,7 +308,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                         onClick={() => setMenuOpen(menuOpen === post.id ? null : post.id)}
                         style={{
                           background: "none", border: "none", cursor: "pointer",
-                          color: "#7ABFCC", padding: 6, borderRadius: 8,
+                          color: "#9CA3AF", padding: 6, borderRadius: 8,
                           display: "flex", alignItems: "center",
                         }}
                       >
@@ -316,8 +317,8 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                       {menuOpen === post.id && (
                         <div style={{
                           position: "absolute", right: 0, top: "100%", zIndex: 50,
-                          background: "rgba(6,13,31,0.98)", backdropFilter: "blur(20px)",
-                          border: "1px solid rgba(0,212,224,0.2)", borderRadius: 12,
+                          background: "#ffffff", backdropFilter: "blur(20px)",
+                          border: "1px solid rgba(0,0,0,0.1)", borderRadius: 12,
                           padding: 6, minWidth: 140,
                           boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
                         }}>
@@ -325,10 +326,10 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                             <button key={opt} onClick={() => setMenuOpen(null)} style={{
                               display: "block", width: "100%", padding: "8px 12px",
                               background: "none", border: "none", cursor: "pointer",
-                              color: opt === "Report" ? "#FF4B6E" : "#FFFFFF",
+                              color: opt === "Report" ? "#EF4444" : "#111827",
                               fontSize: 13, textAlign: "left", borderRadius: 8,
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = "rgba(0,212,224,0.1)"}
+                            onMouseEnter={e => e.currentTarget.style.background = "#F3F4F6"}
                             onMouseLeave={e => e.currentTarget.style.background = "none"}
                             >{opt}</button>
                           ))}
@@ -382,14 +383,14 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                           style={{
                             background: "none", border: "none", cursor: "pointer", padding: 0,
                             display: "flex", alignItems: "center", gap: 6,
-                            color: isLiked ? "#FF4B6E" : "#7ABFCC",
+                            color: isLiked ? "#EF4444" : "#9CA3AF",
                             transition: "all 0.2s",
                           }}
                         >
                           <Heart
                             size={22}
-                            fill={isLiked ? "#FF4B6E" : "none"}
-                            color={isLiked ? "#FF4B6E" : "#7ABFCC"}
+                            fill={isLiked ? "#EF4444" : "none"}
+                            color={isLiked ? "#EF4444" : "#9CA3AF"}
                           />
                         </button>
                         <button
@@ -397,12 +398,12 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                             if (!user) { onRequireAuth?.(); return; }
                             setShowComments(showComments === post.id ? null : post.id);
                           }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#7ABFCC" }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9CA3AF" }}
                         >
                           <MessageCircle size={22} />
                         </button>
                         <button
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#7ABFCC" }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9CA3AF" }}
                         >
                           <Share2 size={20} />
                         </button>
@@ -411,22 +412,22 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                         onClick={() => handleSave(post.id)}
                         style={{
                           background: "none", border: "none", cursor: "pointer", padding: 0,
-                          color: isSaved ? "#FFD700" : "#7ABFCC",
+                          color: isSaved ? "#F59E0B" : "#9CA3AF",
                         }}
                       >
-                        <Bookmark size={22} fill={isSaved ? "#FFD700" : "none"} color={isSaved ? "#FFD700" : "#7ABFCC"} />
+                        <Bookmark size={22} fill={isSaved ? "#F59E0B" : "none"} color={isSaved ? "#F59E0B" : "#9CA3AF"} />
                       </button>
                     </div>
 
                     {/* Like count */}
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF", marginBottom: 6 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 6 }}>
                       {formatCount(likeCount)} likes
                     </div>
 
                     {/* Caption */}
                     {caption && (
-                      <div style={{ fontSize: 14, color: "#E2E8F0", marginBottom: 6, lineHeight: 1.5 }}>
-                        <span style={{ fontWeight: 700, color: "#FFFFFF", marginRight: 6 }}>{username}</span>
+                      <div style={{ fontSize: 14, color: "#374151", marginBottom: 6, lineHeight: 1.5 }}>
+                        <span style={{ fontWeight: 700, color: "#111827", marginRight: 6 }}>{username}</span>
                         {caption}
                       </div>
                     )}
@@ -440,7 +441,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                         }}
                         style={{
                           background: "none", border: "none", cursor: "pointer", padding: 0,
-                          color: "#7ABFCC", fontSize: 13, marginBottom: 6,
+                          color: "#6B7280", fontSize: 13, marginBottom: 6,
                         }}
                       >
                         View all {commentCount} comments
@@ -451,7 +452,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                     {hashtags.length > 0 && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, paddingBottom: 14 }}>
                         {hashtags.map((tag, i) => (
-                          <span key={i} style={{ fontSize: 13, color: "#00D4E0", fontWeight: 500 }}>{tag}</span>
+                          <span key={i} style={{ fontSize: 13, color: "#7C3AED", fontWeight: 500 }}>{tag}</span>
                         ))}
                       </div>
                     )}
@@ -461,7 +462,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
                   {/* Inline comment section */}
                   {showComments === post.id && (
                     <div style={{
-                      borderTop: "1px solid rgba(0,212,224,0.1)",
+                      borderTop: "1px solid rgba(0,0,0,0.08)",
                       padding: "0 0 4px",
                     }}>
                       <ModernCommentSection
@@ -483,6 +484,9 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
         @media (max-width: 768px) {
           .home-page-root { padding-left: 0 !important; padding-bottom: 80px; }
         }
+        .home-page-root::-webkit-scrollbar { width: 6px; }
+        .home-page-root::-webkit-scrollbar-track { background: #EEF2F8; }
+        .home-page-root::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
       `}</style>
     </div>
   );
