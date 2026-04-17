@@ -77,7 +77,7 @@ export function AdminCampaignsPage() {
       case 'daily': return '#10B981';
       case 'weekly': return '#3B82F6';
       case 'monthly': return '#8B5CF6';
-      case 'grand_finale': return '#F59E0B';
+      case 'grand_finale': return '#1E6FD9';
       case 'flash': return '#EF4444';
       default: return '#6B7280';
     }
@@ -87,7 +87,7 @@ export function AdminCampaignsPage() {
     switch (status) {
       case 'active': return '#10B981';
       case 'draft': return '#6B7280';
-      case 'paused': return '#F59E0B';
+      case 'paused': return '#0EA5E9';
       case 'completed': return '#3B82F6';
       case 'cancelled': return '#EF4444';
       default: return '#6B7280';
@@ -274,8 +274,8 @@ export function AdminCampaignsPage() {
           </div>
           <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <div style={{ width: 40, height: 40, background: '#F59E0B20', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Star size={20} style={{ color: '#F59E0B' }} />
+              <div style={{ width: 40, height: 40, background: '#1E6FD920', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Star size={20} style={{ color: '#1E6FD9' }} />
               </div>
               <div>
                 <div style={{ color: T.txt, fontSize: 24, fontWeight: 700 }}>{stats.total_votes}</div>

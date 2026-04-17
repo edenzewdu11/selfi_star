@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)" };
 
 export function Sidebar({ activeTab, onTabChange, user, onLogout, onRequireAuth, onShowPostPage }) {
   const [showSettings, setShowSettings] = useState(false);
@@ -24,8 +24,8 @@ export function Sidebar({ activeTab, onTabChange, user, onLogout, onRequireAuth,
   return (
     <div style={{
       width: 280,
-      background: "#fff",
-      borderRight: `1px solid ${T.border}`,
+      background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
+      borderRight: "1px solid rgba(0,212,224,0.15)",
       display: "flex",
       flexDirection: "column",
       height: "100vh",
@@ -82,7 +82,8 @@ export function Sidebar({ activeTab, onTabChange, user, onLogout, onRequireAuth,
           style={{
             width: "100%",
             padding: "12px",
-            background: `linear-gradient(135deg, ${T.pri}, #B8821E)`,
+            background: `linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)`,
+            boxShadow: '0 4px 20px rgba(255,215,0,0.4)',
             border: "none",
             borderRadius: 8,
             color: "#fff",

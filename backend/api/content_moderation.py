@@ -10,7 +10,7 @@ from PIL import Image
 import io
 
 # NSFW detection thresholds
-NSFW_THRESHOLD = 0.3  # Lower threshold to catch more sensitive content
+NSFW_THRESHOLD = 0.6  # Only block clearly explicit content
 
 # Labels that are ALWAYS blocked (explicit nudity) — one match = block
 ALWAYS_BLOCK_LABELS = {
@@ -203,96 +203,10 @@ def check_image_file(uploaded_file):
         else:
             print("[ContentModeration] NudeNet detector not available, using fallback checks")
         
-        # Fallback: Basic image analysis
-        try:
-            from PIL import Image
-            import numpy as np
-            
-            with Image.open(tmp_path) as img:
-                # Convert to RGB if needed
-                img = img.convert('RGB')
-                pixels = np.array(img)
-                
-                # Basic skin detection
-                skin_ratio = detect_skin_ratio(pixels)
-                print(f"[ContentModeration] Skin ratio: {skin_ratio:.2f}")
-                
-                if skin_ratio > 0.2:  # Even lower threshold - block at 20%
-                    print(f"[ContentModeration] BLOCKED (high skin ratio: {skin_ratio:.2f})")
-                    return False, (
-                        "⚠️ This content contains sensitive material and cannot be posted. "
-                        "Please follow our community guidelines."
-                    )
-                
-                # Additional check: detect warm color tones (common in intimate photos)
-                warm_tone_ratio = detect_warm_tones(pixels)
-                print(f"[ContentModeration] Warm tone ratio: {warm_tone_ratio:.2f}")
-                
-                if warm_tone_ratio > 0.3:  # High warm tones suggest intimate lighting
-                    print(f"[ContentModeration] BLOCKED (suspicious warm tones: {warm_tone_ratio:.2f})")
-                    return False, (
-                        "⚠️ This content contains sensitive material and cannot be posted. "
-                        "Please follow our community guidelines."
-                    )
-                
-                # Check for large areas of flesh tones
-                if detect_large_flesh_areas(pixels):
-                    print(f"[ContentModeration] BLOCKED (large flesh areas detected)")
-                    return False, (
-                        "⚠️ This content contains sensitive material and cannot be posted. "
-                        "Please follow our community guidelines."
-                    )
-                    
-        except Exception as e:
-            print(f"[ContentModeration] Fallback analysis error: {e}")
-        
-        # Additional check: detect faces and check if they're too close (kissing detection)
-        try:
-            import cv2
-            import numpy as np
-            
-            img = cv2.imread(tmp_path)
-            if img is not None and img.shape is not None:
-                # Load face cascade classifier
-                face_cascade = cv2.CascadeClassifier(
-                    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-                )
-                if face_cascade.empty():
-                    print("[ContentModeration] Face cascade classifier not loaded")
-                else:
-                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                    faces = face_cascade.detectMultiScale(gray, 1.1, 4)  # More sensitive settings
-                    
-                    print(f"[ContentModeration] Detected {len(faces)} faces")
-                    
-                    # If 2 faces are detected and very close, likely kissing
-                    if len(faces) >= 2:
-                        # Calculate distances between face centers
-                        face_centers = [(x + w//2, y + h//2) for (x, y, w, h) in faces]
-                        
-                        for i in range(len(face_centers)):
-                            for j in range(i+1, len(face_centers)):
-                                x1, y1 = face_centers[i]
-                                x2, y2 = face_centers[j]
-                                distance = ((x2-x1)**2 + (y2-y1)**2)**0.5
-                                
-                                # If faces are very close (within 200 pixels), likely kissing
-                                if distance < 200:
-                                    print(f"[ContentModeration] BLOCKED (faces too close - likely kissing) - distance: {distance:.0f}px")
-                                    return False, (
-                                        "⚠️ This content contains sensitive or suggestive material and cannot be posted. "
-                                        "Please follow our community guidelines."
-                                    )
-                    
-                    # Also block if any single face with high skin ratio (could be intimate selfie)
-                    if len(faces) >= 1 and skin_ratio > 0.2:
-                        print(f"[ContentModeration] BLOCKED (intimate content detected - face with high skin ratio)")
-                        return False, (
-                            "⚠️ This content contains sensitive material and cannot be posted. "
-                            "Please follow our community guidelines."
-                        )
-        except Exception as e:
-            print(f"[ContentModeration] Face detection error: {e}")
+        # Fallback: Skip aggressive pixel-based checks since this is a selfie app.
+        # Normal selfies contain skin, warm tones, and faces — these are NOT indicators of NSFW.
+        # Only NudeNet-based detection above should block content.
+        print("[ContentModeration] Skipping fallback pixel analysis (too many false positives for selfie app)")
         
         # Allow if no explicit or suggestive content detected
         print(f"[ContentModeration] Image PASSED all checks")

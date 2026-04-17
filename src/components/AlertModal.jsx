@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-const T = { pri: "#DA9B2A", txt: "#1C1917", sub: "#78716C", bg: "#FAFAF7", dark: "#0C1A12", border: "#E7E5E4", red: "#EF4444" };
+const T = { pri: "#00D4E0", txt: "#FFFFFF", sub: "#7ABFCC", bg: "rgba(0,212,224,0.08)", dark: "#020810", border: "rgba(0,212,224,0.2)", red: "#FF4B6E" };
 
 export function AlertModal({ 
   isOpen, 
@@ -37,7 +37,7 @@ export function AlertModal({
       case "error":
         return T.red;
       case "warning":
-        return "#F59E0B";
+        return "#0EA5E9";
       default:
         return T.pri;
     }
@@ -62,12 +62,15 @@ export function AlertModal({
     >
       <div
         style={{
-          background: "#fff",
-          borderRadius: 16,
-          padding: "24px",
+          background: "rgba(10,22,40,0.95)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(0,212,224,0.25)",
+          borderRadius: 20,
+          padding: "28px",
           maxWidth: 400,
           width: "100%",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
           animation: "modalSlideIn 0.2s ease-out",
         }}
         onClick={(e) => e.stopPropagation()}

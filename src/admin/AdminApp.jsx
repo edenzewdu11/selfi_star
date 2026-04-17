@@ -17,7 +17,7 @@ import { AdminLogin } from './pages/AdminLogin';
 import api from '../api';
 
 const T = {
-  pri: "#DA9B2A",
+  pri: "#1E6FD9",
   txt: "#1C1917",
   sub: "#78716C",
   bg: "#FAFAF9",
@@ -28,7 +28,7 @@ const T = {
   green: "#10B981",
   blue: "#3B82F6",
   purple: "#8B5CF6",
-  orange: "#F59E0B"
+  orange: "#1E6FD9"
 };
 
 export function AdminApp() {

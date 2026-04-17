@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4", red:"#EF4444" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)", red:"#FF4B6E" };
 
 export function VideoCard({ video, onLike, onComment, onShare }) {
   const [liked, setLiked] = useState(false);

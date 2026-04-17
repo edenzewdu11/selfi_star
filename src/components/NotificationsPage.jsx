@@ -406,7 +406,7 @@ export function NotificationsPage({ user, onUserClick, onBack, onShowPostPage, o
           50% { opacity: 0.5; }
         }
       `}</style>
-      <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <div style={{ display: "flex", height: "100vh", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
       {/* Sidebar */}
       <ModernSidebar
         user={user}
@@ -477,7 +477,7 @@ export function NotificationsPage({ user, onUserClick, onBack, onShowPostPage, o
                   height: 8,
                   borderRadius: "50%",
                   background: connectionStatus === 'connected' ? '#10B981' : 
-                             connectionStatus === 'polling' ? '#F59E0B' : '#EF4444',
+                             connectionStatus === 'polling' ? '#0EA5E9' : '#EF4444',
                   animation: connectionStatus === 'polling' ? 'pulse 2s infinite' : 'none',
                 }}></div>
                 <span style={{ color: T.sub }}>

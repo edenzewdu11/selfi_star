@@ -184,8 +184,9 @@ export function SettingsPage({ user, onClose, onLogout }) {
             style={{
               width: "280px",
               height: "100vh",
-              background: "#fff",
-              boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
+              background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
+              borderRight: "1px solid rgba(0,212,224,0.15)",
+              boxShadow: "4px 0 20px rgba(0,0,0,0.4)",
               transform: showMobileSidebar ? "translateX(0)" : "translateX(-100%)",
               transition: "transform 0.3s ease",
             }}
@@ -233,7 +234,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
                       width: "100%",
                       padding: "14px 20px",
                       border: "none",
-                      background: isActive ? "#fff" : "transparent",
+                      background: isActive ? "rgba(0,212,224,0.12)" : "transparent",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -302,7 +303,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
             maxWidth: isMobile ? "100%" : isTablet ? "800px" : "900px",
             maxHeight: isMobile ? "100vh" : isTablet ? "95vh" : "90vh",
             margin: isMobile ? 0 : isTablet ? "0 auto" : "auto",
-            background: "#fff",
+            background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
             borderRadius: isMobile ? 0 : isTablet ? 16 : 20,
             display: "flex",
             overflow: "hidden",
@@ -363,7 +364,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
                         width: "100%",
                         padding: isSidebarCollapsed ? "14px" : "14px 20px",
                         border: "none",
-                        background: isActive ? "#fff" : "transparent",
+                        background: isActive ? "rgba(0,212,224,0.12)" : "transparent",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
@@ -423,7 +424,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
           <div style={{
             flex: 1,
             overflowY: "auto",
-            background: "#fff",
+            background: "linear-gradient(160deg, #060D1F 0%, #0A1628 100%)",
           }}>
             {/* Mobile Header */}
             {isMobile && (
@@ -433,7 +434,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                background: "#fff",
+                background: "rgba(6,13,31,0.95)",
                 position: "sticky",
                 top: 0,
                 zIndex: 10,
@@ -561,8 +562,8 @@ export function SettingsPage({ user, onClose, onLogout }) {
                             border: `1px solid ${T.border}`,
                             borderRadius: 8,
                             fontSize: 14,
-                            color: T.txt,
-                            background: "#fff",
+                            color: "#FFFFFF",
+                            background: "rgba(0,20,50,0.6)",
                           }}
                         />
                       </div>
@@ -580,15 +581,15 @@ export function SettingsPage({ user, onClose, onLogout }) {
                             border: `1px solid ${T.border}`,
                             borderRadius: 8,
                             fontSize: 14,
-                            color: T.txt,
-                            background: "#fff",
+                            color: "#FFFFFF",
+                            background: "rgba(0,20,50,0.6)",
                           }}
                         />
                       </div>
                     </div>
 
                     {/* Password Change */}
-                    <div style={{ padding: 20, background: T.bg, borderRadius: 12 }}>
+                    <div style={{ padding: 20, background: "rgba(0,20,50,0.6)", borderRadius: 12 }}>
                       <h3 style={{ fontSize: 16, fontWeight: 600, color: T.txt, marginBottom: 16 }}>Change Password</h3>
                       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                         <div>
@@ -605,8 +606,8 @@ export function SettingsPage({ user, onClose, onLogout }) {
                               border: `1px solid ${T.border}`,
                               borderRadius: 8,
                               fontSize: 14,
-                              color: T.txt,
-                              background: "#fff",
+                              color: "#FFFFFF",
+                              background: "rgba(0,20,50,0.6)",
                             }}
                           />
                         </div>
@@ -625,8 +626,8 @@ export function SettingsPage({ user, onClose, onLogout }) {
                               border: `1px solid ${T.border}`,
                               borderRadius: 8,
                               fontSize: 14,
-                              color: T.txt,
-                              background: "#fff",
+                              color: "#FFFFFF",
+                              background: "rgba(0,20,50,0.6)",
                             }}
                           />
                         </div>
@@ -645,8 +646,8 @@ export function SettingsPage({ user, onClose, onLogout }) {
                               border: `1px solid ${T.border}`,
                               borderRadius: 8,
                               fontSize: 14,
-                              color: T.txt,
-                              background: "#fff",
+                              color: "#FFFFFF",
+                              background: "rgba(0,20,50,0.6)",
                             }}
                           />
                         </div>
@@ -905,8 +906,8 @@ export function SettingsPage({ user, onClose, onLogout }) {
                           border: `1px solid ${T.border}`,
                           borderRadius: 8,
                           fontSize: 14,
-                          color: T.txt,
-                          background: "#fff",
+                          color: "#FFFFFF",
+                          background: "rgba(0,20,50,0.8)",
                         }}
                       >
                         <option value="en">English</option>
@@ -1055,7 +1056,10 @@ export function SettingsPage({ user, onClose, onLogout }) {
         >
           <div
             style={{
-              background: "#fff",
+              background: "rgba(10,22,40,0.95)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border: "1px solid rgba(0,212,224,0.2)",
               borderRadius: 16,
               padding: "24px",
               maxWidth: isMobile ? "90%" : 400,
@@ -1067,7 +1071,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
             <h3 style={{ 
               fontSize: 20, 
               fontWeight: 700, 
-              color: modal.type === 'error' ? '#EF4444' : modal.type === 'warning' ? '#F59E0B' : modal.type === 'success' ? '#10B981' : T.txt, 
+              color: modal.type === 'error' ? '#EF4444' : modal.type === 'warning' ? '#0EA5E9' : modal.type === 'success' ? '#10B981' : T.txt, 
               marginBottom: 12 
             }}>
               {modal.title}
@@ -1084,7 +1088,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
                     padding: "10px 20px",
                     border: `1px solid ${T.border}`,
                     borderRadius: 8,
-                    background: "#fff",
+                    background: "rgba(255,255,255,0.08)",
                     cursor: "pointer",
                     fontSize: 14,
                     fontWeight: 600,
@@ -1105,7 +1109,7 @@ export function SettingsPage({ user, onClose, onLogout }) {
                   padding: "10px 20px",
                   border: "none",
                   borderRadius: 8,
-                  background: modal.type === 'error' ? '#EF4444' : modal.type === 'warning' ? '#F59E0B' : modal.type === 'success' ? '#10B981' : T.pri,
+                  background: modal.type === 'error' ? '#EF4444' : modal.type === 'warning' ? '#0EA5E9' : modal.type === 'success' ? '#10B981' : T.pri,
                   cursor: "pointer",
                   fontSize: 14,
                   fontWeight: 600,

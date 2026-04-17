@@ -5,7 +5,7 @@ export function AlertModal({ isOpen, title, message, type = 'info', onClose, onC
     switch (type) {
       case 'success': return '#10B981';
       case 'error': return '#EF4444';
-      case 'warning': return '#F59E0B';
+      case 'warning': return '#0EA5E9';
       default: return '#3B82F6';
     }
   };

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { contentFilter } from "../utils/contentFilter";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4", red:"#EF4444" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)", red:"#FF4B6E" };
 
 export function CreateVideoModal({ onClose, onVideoCreated }) {
   const [caption, setCaption] = useState("");
@@ -106,7 +106,10 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
         animation: "fadeIn 0.3s ease-out",
       }}>
       <div style={{
-        background: "#fff",
+        background: "rgba(10,22,40,0.95)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        border: "1px solid rgba(0,212,224,0.2)",
         borderRadius: 20,
         padding: 32,
         maxWidth: 520,
@@ -333,7 +336,8 @@ export function CreateVideoModal({ onClose, onVideoCreated }) {
             style={{
               flex: 1,
               padding: 12,
-              background: loading ? "#ccc" : `linear-gradient(135deg, ${T.pri}, #B8821E)`,
+              background: loading ? "rgba(255,255,255,0.1)" : `linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)`,
+              boxShadow: loading ? 'none' : '0 4px 18px rgba(255,215,0,0.4)',
               border: "none",
               borderRadius: 8,
               color: "#fff",

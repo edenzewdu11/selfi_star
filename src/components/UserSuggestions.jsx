@@ -158,7 +158,7 @@ export function UserSuggestions({ onUserClick }) {
                 style={{
                   padding: "6px 12px",
                   border: isFollowing ? `1px solid ${T.border}` : "none",
-                  background: isFollowing ? "#fff" : T.pri,
+                  background: isFollowing ? "rgba(0,212,224,0.1)" : "linear-gradient(135deg, #00D4E0, #0891B2)",
                   borderRadius: 6,
                   cursor: "pointer",
                   fontSize: 12,
@@ -177,7 +177,7 @@ export function UserSuggestions({ onUserClick }) {
                 }}
                 onMouseLeave={(e) => {
                   if (isFollowing) {
-                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.background = "rgba(0,212,224,0.1)";
                   }
                 }}
               >

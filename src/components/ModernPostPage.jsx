@@ -122,7 +122,7 @@ export function ModernPostPage({ user, onBack }) {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "#fff",
+      background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
       overflowY: "auto",
       zIndex: 200,
     }}>
@@ -130,8 +130,10 @@ export function ModernPostPage({ user, onBack }) {
       <div style={{
         position: "sticky",
         top: 0,
-        background: "#fff",
-        borderBottom: `1px solid ${T.border}`,
+        background: "rgba(6,13,31,0.95)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(0,212,224,0.15)",
         padding: "12px 20px",
         display: "flex",
         alignItems: "center",

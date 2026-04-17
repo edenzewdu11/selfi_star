@@ -27,7 +27,7 @@ export function LandingPage({ onLogin, onRegister, onShowCampaigns }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fff" }}>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
       {/* Hero Section */}
       <div style={{
         background: `linear-gradient(135deg, ${T.dark}, ${T.pri})`,
@@ -59,14 +59,14 @@ export function LandingPage({ onLogin, onRegister, onShowCampaigns }) {
               onClick={onRegister}
               style={{
                 padding: "16px 40px",
-                background: "#fff",
-                color: T.dark,
+                background: "linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)",
+                color: "#0A1628",
                 border: "none",
                 borderRadius: 12,
+                boxShadow: "0 6px 24px rgba(255,215,0,0.4)",
                 fontSize: 16,
                 fontWeight: 700,
                 cursor: "pointer",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
               }}
             >
               Get Started Free
@@ -111,7 +111,7 @@ export function LandingPage({ onLogin, onRegister, onShowCampaigns }) {
       </div>
 
       {/* Features Section */}
-      <div style={{ padding: "80px 20px", background: "#fff" }}>
+      <div style={{ padding: "80px 20px", background: "transparent" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: "center", marginBottom: 60, color: T.txt }}>
             Why Choose WorqPost?
@@ -272,7 +272,7 @@ export function LandingPage({ onLogin, onRegister, onShowCampaigns }) {
       </div>
 
       {/* Posts Preview Section */}
-      <div style={{ padding: "80px 20px", background: "#fff" }}>
+      <div style={{ padding: "80px 20px", background: "transparent" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: "center", marginBottom: 16, color: T.txt }}>
             Trending Posts
@@ -293,8 +293,9 @@ export function LandingPage({ onLogin, onRegister, onShowCampaigns }) {
                 <div key={post.id} style={{
                   borderRadius: 12,
                   overflow: "hidden",
-                  border: `1px solid ${T.border}`,
-                  background: "#fff",
+                  border: "1px solid rgba(0,212,224,0.2)",
+                  background: "rgba(10,22,40,0.8)",
+                  backdropFilter: "blur(20px)",
                   cursor: "pointer",
                   transition: "transform 0.2s, box-shadow 0.2s",
                 }}

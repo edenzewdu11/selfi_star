@@ -63,7 +63,7 @@ export function CampaignsPage({ theme, onCampaignClick }) {
       case 'daily': return '#10B981';
       case 'weekly': return '#3B82F6';
       case 'monthly': return '#8B5CF6';
-      case 'grand_finale': return '#F59E0B';
+      case 'grand_finale': return '#00D4E0';
       case 'flash': return '#EF4444';
       default: return '#6B7280';
     }

@@ -11,46 +11,41 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    
-    // Apply dark mode to body
-    if (darkMode) {
-      document.body.style.background = '#0C1A12';
-      document.body.style.color = '#FAFAF7';
-    } else {
-      document.body.style.background = '#fff';
-      document.body.style.color = '#1C1917';
-    }
-  }, [darkMode]);
+    document.body.style.background = 'linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)';
+    document.body.style.color = '#FFFFFF';
+  }, []);
 
   const toggleDarkMode = () => setDarkMode(prev => !prev);
 
+  const DARK = {
+    pri: "#00D4E0",
+    priD: "#0891B2",
+    priL: "rgba(0,212,224,0.15)",
+    sec: "#FFD700",
+    secM: "#F5A623",
+    secL: "rgba(255,215,0,0.15)",
+    gold: "#FFD700",
+    goldD: "#F5A623",
+    grn: "#00E5A0",
+    red: "#FF4B6E",
+    purple: "#A855F7",
+    txt: "#FFFFFF",
+    sub: "#7ABFCC",
+    bg: "#060D1F",
+    cardBg: "rgba(10,22,40,0.85)",
+    border: "rgba(0,212,224,0.2)",
+    dark: "#020810",
+    inputBg: "rgba(0,20,50,0.6)",
+    navBg: "rgba(6,13,31,0.95)",
+  };
+
   const theme = {
-    darkMode,
+    darkMode: true,
     toggleDarkMode,
-    colors: darkMode ? {
-      pri: "#DA9B2A",
-      txt: "#FAFAF7",
-      sub: "#A8A29E",
-      bg: "#1C1917",
-      dark: "#0C1A12",
-      border: "#292524",
-      cardBg: "#292524",
-    } : {
-      pri: "#DA9B2A",
-      txt: "#1C1917",
-      sub: "#78716C",
-      bg: "#FAFAF7",
-      dark: "#0C1A12",
-      border: "#E7E5E4",
-      cardBg: "#fff",
-    }
+    colors: DARK,
   };
 
   return (

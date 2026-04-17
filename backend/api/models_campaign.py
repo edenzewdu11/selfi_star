@@ -18,7 +18,9 @@ class Campaign(models.Model):
     
     STATUS_CHOICES = [
         ('draft', 'Draft'),
+        ('upcoming', 'Upcoming'),
         ('active', 'Active'),
+        ('voting', 'Voting'),
         ('paused', 'Paused'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
@@ -65,6 +67,29 @@ class Campaign(models.Model):
     # Selection Process
     judge_weight = models.IntegerField(default=70, validators=[MinValueValidator(0), MaxValueValidator(100)])
     public_vote_weight = models.IntegerField(default=30, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    
+    # Daily Campaign: hybrid scoring split
+    daily_score_pct = models.IntegerField(default=70, help_text='% winners by score (Daily campaigns)')
+    daily_random_pct = models.IntegerField(default=30, help_text='% winners by random (Daily campaigns)')
+    
+    # Gamification scoring weights
+    like_points = models.IntegerField(default=2, help_text='Points per like received')
+    comment_points = models.IntegerField(default=3, help_text='Points per comment received')
+    share_points = models.IntegerField(default=5, help_text='Points per share')
+    streak_bonus = models.IntegerField(default=10, help_text='Bonus points per consecutive day posted')
+    streak_multiplier_enabled = models.BooleanField(default=True)
+    spin_reward_points = models.IntegerField(default=5, help_text='Points from daily spin')
+    login_bonus_points = models.IntegerField(default=1, help_text='Points for daily login')
+    coin_gift_points = models.IntegerField(default=2, help_text='Points per coin gift sent')
+    completion_bonus = models.IntegerField(default=50, help_text='Bonus for completing all days in period')
+    inactivity_penalty = models.IntegerField(default=5, help_text='Points deducted per inactive day')
+    
+    # Grand Campaign lifecycle
+    auto_lifecycle = models.BooleanField(default=True, help_text='Auto transition upcoming->active->voting->completed')
+    voting_start_date = models.DateTimeField(null=True, blank=True, help_text='When voting phase begins (Grand campaigns)')
+    
+    # Once-per-cycle rule (Weekly/Monthly)
+    once_per_cycle = models.BooleanField(default=True, help_text='User can only win once per campaign cycle')
     
     # Winner information
     winner_count = models.IntegerField(default=1, help_text='Number of winners')

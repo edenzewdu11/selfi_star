@@ -3,11 +3,11 @@ import { Inp } from "./Inp";
 import { GradBtn } from "./GradBtn";
 import api from "../api";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", border:"#E7E5E4", red:"#EF4444", redL:"#FEE2E2", dark:"#0C1A12", bg:"#FAFAF7", goldL:"#FFFBEB", grn:"#10B981", secL:"#D1FAE5" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", border:"rgba(0,212,224,0.2)", red:"#FF4B6E", redL:"rgba(255,75,110,0.12)", dark:"#020810", bg:"rgba(0,212,224,0.08)", goldL:"rgba(255,215,0,0.08)", grn:"#10B981", secL:"rgba(0,212,224,0.05)" };
 
 const PLANS = [
   { id:"free", name:"Explorer", am:"ተመራማሪ", emoji:"🌱", price:"Free", period:"", color:"#10B981", popular:false, features:["1 post/day","Basic analytics","Community access"] },
-  { id:"pro", name:"Star", am:"ኮከብ", emoji:"⭐", price:"$4.99", period:"/mo", color:"#DA9B2A", popular:true, features:["Unlimited posts","Advanced analytics","Priority support","Monetization"] },
+  { id:"pro", name:"Star", am:"ኮከብ", emoji:"⭐", price:"$4.99", period:"/mo", color:"#00D4E0", popular:true, features:["Unlimited posts","Advanced analytics","Priority support","Monetization"] },
   { id:"premium", name:"Legend", am:"ታላቅ", emoji:"👑", price:"$9.99", period:"/mo", color:"#7C3AED", popular:false, features:["Everything in Star","Custom branding","Direct messaging","Exclusive events"] },
 ];
 
@@ -91,7 +91,7 @@ export function RegisterScreen({ onSuccess, onLogin, onBack }) {
             <Inp label="Full Name" value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Your full name" icon="👤" />
             <Inp label="Email" type="email" value={form.email} onChange={e=>set("email",e.target.value)} placeholder="you@example.com" icon="📧" />
             <Inp label="Password" type={showPw?"text":"password"} value={form.pw} onChange={e=>set("pw",e.target.value)} placeholder="Min 8 characters" icon="🔒" right={<span onClick={()=>setShowPw(!showPw)} style={{ cursor:"pointer" }}>{showPw?"🙈":"👁️"}</span>} />
-            {form.pw && <div style={{ display:"flex", gap:4, marginBottom:14 }}>{["Weak","Fair","Strong","Very Strong"].map((_,i)=>{ const s=form.pw.length<6?0:form.pw.length<10?1:form.pw.length<14?2:3; return <div key={i} style={{ flex:1, height:4, borderRadius:4, background:i<=s?["#EF4444","#F97316","#F59E0B","#10B981"][s]:"#E5E7EB" }} />; })}</div>}
+            {form.pw && <div style={{ display:"flex", gap:4, marginBottom:14 }}>{["Weak","Fair","Strong","Very Strong"].map((_,i)=>{ const s=form.pw.length<6?0:form.pw.length<10?1:form.pw.length<14?2:3; return <div key={i} style={{ flex:1, height:4, borderRadius:4, background:i<=s?["#EF4444","#1557B0","#1E6FD9","#10B981"][s]:"#E5E7EB" }} />; })}</div>}
             <GradBtn onClick={()=>{ if(!form.name||!form.email||!form.pw){setErr("Fill all fields");return;} setErr(""); setStep(1); }} disabled={!form.name||!form.email||!form.pw}>Continue →</GradBtn>
             {err&&<div style={{ marginTop:10, fontSize:12, color:T.red, textAlign:"center" }}>⚠️ {err}</div>}
             <div style={{ textAlign:"center", marginTop:14, fontSize:13, color:T.sub }}>Have an account? <span onClick={onLogin} style={{ color:T.pri, fontWeight:700, cursor:"pointer" }}>Log in</span></div>
@@ -122,7 +122,7 @@ export function RegisterScreen({ onSuccess, onLogin, onBack }) {
                 <input key={i} ref={el=>otpRefs.current[i]=el} type="text" maxLength={1} value={d}
                   onChange={e=>{ const v=e.target.value.replace(/\D/g,""); const n=[...otp]; n[i]=v; setOtp(n); if(v&&i<4) otpRefs.current[i+1]?.focus(); }}
                   onKeyDown={e=>{ if(e.key==="Backspace"&&!otp[i]&&i>0) otpRefs.current[i-1]?.focus(); }}
-                  style={{ width:52, height:58, borderRadius:14, border:`2px solid ${d?T.pri:T.border}`, textAlign:"center", fontSize:22, fontWeight:800, color:T.pri, outline:"none", background:d?"#FDF6E7":"#fff" }} />
+                  style={{ width:52, height:58, borderRadius:14, border:`2px solid ${d?T.pri:T.border}`, textAlign:"center", fontSize:22, fontWeight:800, color:T.pri, outline:"none", background:d?"#EFF6FF":"#fff" }} />
               ))}
             </div>
             {err&&<div style={{ background:T.redL, borderRadius:10, padding:"8px 12px", fontSize:12, color:T.red, textAlign:"center", marginBottom:12 }}>⚠️ {err}</div>}
@@ -137,7 +137,7 @@ export function RegisterScreen({ onSuccess, onLogin, onBack }) {
             <div style={{ fontSize:19, fontWeight:800, color:T.txt, marginBottom:4 }}>Your privacy matters 🔒</div>
             <div style={{ fontSize:13, color:T.sub, marginBottom:18, lineHeight:1.5 }}>Choose how we can contact you.</div>
             {[{key:"sms",icon:"📱",title:"SMS Notifications"},{key:"email",icon:"📧",title:"Email Updates"},{key:"push",icon:"🔔",title:"Push Notifications"},{key:"inApp",icon:"💬",title:"In-App"}].map(item=>(
-              <div key={item.key} onClick={()=>setMc(p=>({...p,[item.key]:!p[item.key]}))} style={{ display:"flex", alignItems:"center", gap:12, background:mc[item.key]?"#FDF6E7":T.bg, borderRadius:14, padding:"11px 13px", border:`1.5px solid ${mc[item.key]?T.pri:T.border}`, cursor:"pointer", marginBottom:10 }}>
+              <div key={item.key} onClick={()=>setMc(p=>({...p,[item.key]:!p[item.key]}))} style={{ display:"flex", alignItems:"center", gap:12, background:mc[item.key]?"#EFF6FF":T.bg, borderRadius:14, padding:"11px 13px", border:`1.5px solid ${mc[item.key]?T.pri:T.border}`, cursor:"pointer", marginBottom:10 }}>
                 <span style={{ fontSize:22 }}>{item.icon}</span>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:13, fontWeight:700, color:T.txt }}>{item.title}</div>

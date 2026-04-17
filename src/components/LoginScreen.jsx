@@ -3,7 +3,7 @@ import { Inp } from "./Inp";
 import { GradBtn } from "./GradBtn";
 import api from "../api";
 
-const T = { txt:"#1C1917", sub:"#78716C", border:"#E7E5E4", pri:"#DA9B2A", red:"#EF4444", redL:"#FEE2E2", dark:"#0C1A12" };
+const T = { txt:"#FFFFFF", sub:"#7ABFCC", border:"rgba(0,212,224,0.2)", pri:"#00D4E0", red:"#FF4B6E", redL:"rgba(255,75,110,0.12)", dark:"#020810" };
 
 export function LoginScreen({ onSuccess, onRegister, onBack }) {
   const [email, setEmail] = useState("");

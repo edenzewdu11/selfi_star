@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)" };
 
 export function UserProfilePage({ user, onClose }) {
   const [stats] = useState({
@@ -25,7 +25,10 @@ export function UserProfilePage({ user, onClose }) {
       overflowY: "auto",
     }}>
       <div style={{
-        background: "#fff",
+        background: "rgba(10,22,40,0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        border: "1px solid rgba(0,212,224,0.2)",
         borderRadius: 16,
         padding: 24,
         maxWidth: 600,
@@ -168,7 +171,8 @@ export function UserProfilePage({ user, onClose }) {
             style={{
               flex: 1,
               padding: 12,
-              background: `linear-gradient(135deg, ${T.pri}, #B8821E)`,
+              background: `linear-gradient(135deg, #00D4E0 0%, #0891B2 60%, #065F7A 100%)`,
+              boxShadow: '0 4px 16px rgba(0,212,224,0.4)',
               border: "none",
               borderRadius: 8,
               color: "#fff",

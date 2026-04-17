@@ -1,0 +1,74 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%);
+  background-attachment: fixed;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+  color: #FFFFFF;
+}
+
+/* Global text shadows - premium glow */
+h1, h2, h3, h4, h5, h6 {
+  text-shadow: 0 2px 12px rgba(0, 212, 224, 0.25);
+}
+
+p, span, div {
+  text-shadow: none;
+}
+
+/* Global button shadows */
+button {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+button:not([disabled]):hover {
+  transform: translateY(-1px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Scrollbars - teal theme */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: rgba(6, 13, 31, 0.5); }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 224, 0.4); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #00D4E0; }
+
+/* Glass card utility */
+.glass-card {
+  background: rgba(10, 22, 40, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 224, 0.2);
+  border-radius: 16px;
+}
+
+/* Teal glow on focus */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: rgba(0, 212, 224, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(0, 212, 224, 0.15) !important;
+}
+
+/* Star field animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,212,224,0.3); }
+  50% { box-shadow: 0 0 25px rgba(0,212,224,0.7), 0 0 50px rgba(0,212,224,0.3); }
+}

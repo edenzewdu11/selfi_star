@@ -873,7 +873,7 @@ const handleFileSelect = async (e) => {
   };
 
   const renderConversationList = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
       <div style={{
         padding: "16px 20px",
         borderBottom: `1px solid ${T.border}`,
@@ -955,7 +955,7 @@ const handleFileSelect = async (e) => {
               display: "flex",
               alignItems: "center",
               gap: 12,
-              background: conv.unread_count > 0 ? T.bg : "#fff",
+              background: conv.unread_count > 0 ? "rgba(0,212,224,0.08)" : "transparent",
             }}
           >
             <div style={{
@@ -1039,7 +1039,7 @@ const handleFileSelect = async (e) => {
             100% { transform: rotate(360deg); }
           }
         `}</style>
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff" }}>
+        <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
         <div style={{
           padding: "16px 20px",
           borderBottom: `1px solid ${T.border}`,
@@ -1152,14 +1152,16 @@ const handleFileSelect = async (e) => {
   };
 
   const renderChat = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff", position: "relative" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)", position: "relative" }}>
       <div style={{
         padding: "12px 20px",
         borderBottom: `1px solid ${T.border}`,
         display: "flex",
         alignItems: "center",
         gap: 12,
-        background: "#fff",
+        background: "rgba(6,13,31,0.95)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
       }}>
         <button onClick={() => setView("list")} style={{
           background: "none",
@@ -1382,7 +1384,7 @@ const handleFileSelect = async (e) => {
                     borderRadius: isOwn ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                     overflow: "hidden",
                     border: `1px solid ${T.border}`,
-                    background: isOwn ? T.pri + "10" : "#fff",
+                    background: isOwn ? "rgba(0,212,224,0.15)" : "rgba(255,255,255,0.07)",
                     padding: 12,
                     maxWidth: "100%",
                   }}>
@@ -1524,10 +1526,11 @@ const handleFileSelect = async (e) => {
                           position: "absolute",
                           top: "100%",
                           [isOwn ? "right" : "left"]: 0,
-                          background: "#fff",
-                          border: "1px solid #ddd",
+                          background: "rgba(10,22,40,0.95)",
+                          backdropFilter: "blur(16px)",
+                          border: "1px solid rgba(0,212,224,0.2)",
                           borderRadius: 8,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
                           zIndex: 1000,
                           minWidth: "150px",
                         }}
@@ -1898,11 +1901,11 @@ const handleFileSelect = async (e) => {
       {/* Input Bar */}
       <div style={{
         padding: "12px 20px",
-        borderTop: `1px solid ${T.border}`,
         display: "flex",
         alignItems: "center",
         gap: 8,
-        background: "#fff",
+        background: "rgba(6,13,31,0.95)",
+        borderTop: "1px solid rgba(0,212,224,0.15)",
       }}>
         <input
           type="file"
@@ -2197,7 +2200,7 @@ const handleFileSelect = async (e) => {
   }
 
   const renderCallHistory = () => (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
       <div style={{
         padding: "16px 20px",
         borderBottom: `1px solid ${T.border}`,

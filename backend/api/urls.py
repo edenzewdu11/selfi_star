@@ -23,8 +23,8 @@ from .views_campaign_new import (
     admin_campaigns_list, admin_campaign_detail, admin_campaign_entries, admin_campaign_stats,
     admin_rewards_list, admin_assign_reward, admin_coin_stats, admin_coin_packages,
     admin_user_coins, admin_grant_coins, user_campaigns, user_my_campaigns,
-    user_enter_campaign, user_campaign_entries, user_vote_campaign, user_coin_balance,
-    user_coin_packages, user_purchase_coins, user_coin_transactions
+    user_enter_campaign, user_campaign_entries, user_vote_campaign, user_campaign_leaderboard,
+    user_coin_balance, user_coin_packages, user_purchase_coins, user_coin_transactions
 )
 from .views_reels import reels_following, reels_saved, reels_trending
 
@@ -111,6 +111,7 @@ urlpatterns = [
     path('campaigns/<int:campaign_id>/enter/', user_enter_campaign, name='user-enter-campaign'),
     path('campaigns/<int:campaign_id>/entries/', user_campaign_entries, name='user-campaign-entries'),
     path('campaigns/<int:campaign_id>/entries/<int:entry_id>/vote/', user_vote_campaign, name='user-vote-campaign'),
+    path('campaigns/<int:campaign_id>/leaderboard/', user_campaign_leaderboard, name='user-campaign-leaderboard'),
     
     # Coin System (User)
     path('coins/balance/', user_coin_balance, name='user-coin-balance'),

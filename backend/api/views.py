@@ -500,6 +500,28 @@ class FollowViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(suggestions, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'], url_path='user-followers/(?P<user_id>[^/.]+)')
+    def user_followers(self, request, user_id=None):
+        try:
+            target = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        follower_ids = Follow.objects.filter(following=target).values_list('follower_id', flat=True)
+        users = User.objects.filter(id__in=follower_ids)
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='user-following/(?P<user_id>[^/.]+)')
+    def user_following(self, request, user_id=None):
+        try:
+            target = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        following_ids = Follow.objects.filter(follower=target).values_list('following_id', flat=True)
+        users = User.objects.filter(id__in=following_ids)
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return Response(serializer.data)
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def search(request):

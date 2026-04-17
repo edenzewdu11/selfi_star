@@ -92,7 +92,7 @@ export function CoinsPage() {
     switch (type) {
       case 'free': return '#6B7280';
       case 'silver': return '#9CA3AF';
-      case 'gold': return '#F59E0B';
+      case 'gold': return '#FFD700';
       case 'vip': return '#8B5CF6';
       default: return '#6B7280';
     }
@@ -115,7 +115,7 @@ export function CoinsPage() {
       case 'earned': return '#10B981';
       case 'spent': return '#EF4444';
       case 'bonus': return '#10B981';
-      case 'refund': return '#F59E0B';
+      case 'refund': return '#0EA5E9';
       default: return '#6B7280';
     }
   };

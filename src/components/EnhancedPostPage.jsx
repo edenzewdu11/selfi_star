@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, Sparkles, X, Play, Square, RotateCw, Check } from "lucide-react";
 import api from "../api";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)" };
 
 const FILTERS = [
   { id: 'none', name: 'Original', filter: 'none' },
@@ -350,7 +350,7 @@ export function EnhancedPostPage({ user, onBack }) {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "#FFFFFF",
+      background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
       zIndex: 4000,
       display: "flex",
       flexDirection: "column",
@@ -381,8 +381,10 @@ export function EnhancedPostPage({ user, onBack }) {
         display: "flex",
         alignItems: "center",
         padding: "16px 20px",
-        background: "#FFFFFF",
-        borderBottom: `1px solid ${T.border}`,
+        background: "rgba(6,13,31,0.95)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(0,212,224,0.15)",
       }}>
         <button
           onClick={onBack}
@@ -453,8 +455,8 @@ export function EnhancedPostPage({ user, onBack }) {
               style={{
                 flex: 1,
                 padding: "12px",
-                background: isActive ? T.pri + "15" : "#FFFFFF",
-                border: isActive ? `2px solid ${T.pri}` : `2px solid ${T.border}`,
+                background: isActive ? "rgba(0,212,224,0.15)" : "rgba(255,255,255,0.05)",
+                border: isActive ? "2px solid rgba(0,212,224,0.6)" : "2px solid rgba(0,212,224,0.15)",
                 borderRadius: 12,
                 color: isActive ? T.pri : T.txt,
                 fontSize: 13,
@@ -526,14 +528,24 @@ export function EnhancedPostPage({ user, onBack }) {
                   justifyContent: "center",
                   cursor: "pointer",
                   gap: 16,
+                  background: "linear-gradient(160deg, rgba(0,212,224,0.08) 0%, rgba(0,20,50,0.6) 100%)",
                 }}>
-                  <Upload size={48} color={T.pri} />
-                  <div style={{ fontSize: 16, fontWeight: 600, color: T.txt }}>
-                    Click to upload
+                  <div style={{
+                    width: 80, height: 80, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #00D4E0 0%, #0891B2 60%, #065F7A 100%)",
+                    boxShadow: "0 8px 24px rgba(0,212,224,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Upload size={36} color="#fff" />
                   </div>
-                  <div style={{ fontSize: 13, color: T.sub }}>
-                    Video or Image (Max 50MB)
-                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: T.txt }}>Tap to pick a photo or video</div>
+                  <div style={{ fontSize: 13, color: T.sub }}>Image or Video · Max 50MB</div>
+                  <div style={{
+                    padding: "12px 32px",
+                    background: "linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)",
+                    boxShadow: "0 6px 20px rgba(255,215,0,0.4)",
+                    borderRadius: 30, color: "#0A1628", fontSize: 14, fontWeight: 800,
+                  }}>Choose File</div>
                   <input
                     type="file"
                     accept="video/*,image/*"
@@ -585,10 +597,10 @@ export function EnhancedPostPage({ user, onBack }) {
                 style={{
                   width: "100%",
                   padding: 16,
-                  background: "#FFFFFF",
-                  border: `2px solid ${T.border}`,
+                  background: "rgba(0,20,50,0.5)",
+                  border: "2px solid rgba(0,212,224,0.2)",
                   borderRadius: 12,
-                  color: T.txt,
+                  color: "#FFFFFF",
                   fontSize: 14,
                   resize: "none",
                   outline: "none",
@@ -606,10 +618,10 @@ export function EnhancedPostPage({ user, onBack }) {
                 style={{
                   width: "100%",
                   padding: 16,
-                  background: "#FFFFFF",
-                  border: `2px solid ${T.border}`,
+                  background: "rgba(0,20,50,0.5)",
+                  border: "2px solid rgba(0,212,224,0.2)",
                   borderRadius: 12,
-                  color: T.txt,
+                  color: "#FFFFFF",
                   fontSize: 14,
                   outline: "none",
                 }}
@@ -886,8 +898,8 @@ export function EnhancedPostPage({ user, onBack }) {
                   }}
                   style={{
                     padding: 20,
-                    background: selectedTemplate === temp.id ? T.pri + "15" : "#FFFFFF",
-                    border: selectedTemplate === temp.id ? `2px solid ${T.pri}` : `2px solid ${T.border}`,
+                    background: selectedTemplate === temp.id ? "rgba(0,212,224,0.15)" : "rgba(255,255,255,0.05)",
+                    border: selectedTemplate === temp.id ? "2px solid rgba(0,212,224,0.6)" : "2px solid rgba(0,212,224,0.15)",
                     borderRadius: 16,
                     cursor: "pointer",
                     textAlign: "left",
@@ -923,7 +935,8 @@ export function EnhancedPostPage({ user, onBack }) {
           zIndex: 5000,
         }}>
           <div style={{
-            background: "#FFFFFF",
+            background: "rgba(10,22,40,0.95)",
+            border: "1px solid rgba(0,212,224,0.2)",
             borderRadius: 16,
             padding: 40,
             textAlign: "center",

@@ -58,15 +58,17 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
   const videoRefs = useRef({});
   const videoContainerRefs = useRef({});
   const lastActiveTabRef = useRef(null);
+  const loadingRef = useRef(false);
 
   const fetchVideos = async (force = false) => {
     // Prevent multiple simultaneous fetches unless forced
-    if (loading && !force) {
+    if (loadingRef.current && !force) {
       console.log("🔄 fetchVideos: Already loading, skipping");
       return;
     }
     
     try {
+      loadingRef.current = true;
       setLoading(true);
       console.log("Fetching videos from API for tab:", activeTab);
       console.log("Current auth token:", api.getToken() ? api.getToken().substring(0, 10) + '...' : 'NONE');
@@ -143,14 +145,6 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
           console.log(`🔍 File type detection for ${videoUrl}: isVideo=${isVideo}, isVideoFile=${isVideoFile}, isImageFile=${isImageFile}`);
         }
         
-        // Initialize following status from backend data
-        if (reel.user && reel.user.id !== undefined) {
-          setFollowingUsers(prev => ({
-            ...prev,
-            [reel.user.id]: reel.user.is_following || false
-          }));
-        }
-        
         console.log("🎬 Processing reel:", {
           id: reel.id,
           user: reel.user?.username,
@@ -183,6 +177,14 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
       console.log("🎯 Formatted videos:", formattedVideos);
       console.log("🎯 Setting videos state with", formattedVideos.length, "items");
       setVideos(formattedVideos);
+      // Update following status after mapping (outside map to avoid re-renders)
+      const followingMap = {};
+      reelsList.forEach(reel => {
+        if (reel.user && reel.user.id !== undefined) {
+          followingMap[reel.user.id] = reel.user.is_following || false;
+        }
+      });
+      setFollowingUsers(prev => ({ ...prev, ...followingMap }));
     } catch (error) {
       console.error("❌ Failed to fetch videos:", error);
       console.error("❌ Error details:", error.message, error.stack);
@@ -190,6 +192,7 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
       setVideos([]);
     } finally {
       console.log("🏁 fetchVideos completed, setting loading to false");
+      loadingRef.current = false;
       setLoading(false);
     }
   };
@@ -197,8 +200,8 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
   // Refresh function that can be called from outside
   const refreshVideos = () => {
     console.log("🔄 Manual refresh triggered");
-    console.log("🔍 Current followingUsers state before refresh:", followingUsers);
-    setLoading(false); // Reset loading state
+    loadingRef.current = false;
+    setLoading(false);
     fetchVideos(true); // Force the fetch
   };
 
@@ -234,6 +237,15 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
     console.log("🔄 Force reset loading, calling fetchVideos with force=true");
     fetchVideos(true); // Force the fetch
   }, []);
+
+  // Refetch videos when user logs in (user prop changes from null to a value)
+  useEffect(() => {
+    if (user) {
+      console.log("🔄 User logged in, refetching videos...");
+      setLoading(false);
+      fetchVideos(true);
+    }
+  }, [user]);
 
   // Fetch notification and message counts
   useEffect(() => {
@@ -751,18 +763,19 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
           }
         }
       `}</style>
-      <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <div style={{ display: "flex", height: "100vh", background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)" }}>
       {/* LEFT SIDEBAR - Navigation - Hidden on mobile */}
       <div style={{
         width: 250,
-        borderRight: `1px solid ${T.border}`,
+        borderRight: "1px solid rgba(0,212,224,0.15)",
         padding: "20px 0",
         overflowY: "auto",
         position: "fixed",
         left: 0,
         top: 0,
         height: "100vh",
-        background: T.cardBg,
+        background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
+        boxShadow: "4px 0 20px rgba(0,0,0,0.4)",
         display: "none",
       }}
       className="desktop-tiktok-sidebar"
@@ -806,9 +819,9 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
               style={{
                 width: "100%",
                 padding: "12px 20px",
-                background: activeTab === item.id ? T.pri + "15" : "transparent",
+                background: activeTab === item.id ? "rgba(0,212,224,0.12)" : "transparent",
                 border: "none",
-                borderLeft: activeTab === item.id ? `3px solid ${T.pri}` : "3px solid transparent",
+                borderLeft: activeTab === item.id ? "3px solid #00D4E0" : "3px solid transparent",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
@@ -816,7 +829,7 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                 gap: 12,
                 fontSize: 15,
                 fontWeight: activeTab === item.id ? 700 : 500,
-                color: T.txt,
+                color: activeTab === item.id ? "#FFFFFF" : "#7ABFCC",
                 transition: "all .2s",
                 position: "relative",
               }}
@@ -861,12 +874,13 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
             style={{
               width: "100%",
               padding: "12px",
-              background: `linear-gradient(135deg, ${T.pri}, #B8821E)`,
+              background: "linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)",
+              boxShadow: '0 4px 20px rgba(255,215,0,0.4)',
               border: "none",
-              borderRadius: 8,
-              color: "#fff",
+              borderRadius: 12,
+              color: "#0A1628",
               fontSize: 14,
-              fontWeight: 700,
+              fontWeight: 800,
               cursor: "pointer",
             }}>
             📹 {t('post')}
@@ -900,12 +914,12 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                 style={{
                   width: "100%",
                   padding: "8px",
-                  background: "#FEE2E2",
-                  border: "none",
-                  borderRadius: 6,
-                  color: "#EF4444",
+                  background: "rgba(255,75,110,0.12)",
+                  border: "1px solid rgba(255,75,110,0.3)",
+                  borderRadius: 8,
+                  color: "#FF4B6E",
                   fontSize: 12,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: "pointer",
                 }}
               >
@@ -919,14 +933,15 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                 style={{
                   width: "100%",
                   padding: "12px",
-                  background: T.pri,
+                  background: "linear-gradient(135deg, #00D4E0, #0891B2)",
                   border: "none",
-                  borderRadius: 8,
+                  borderRadius: 10,
                   color: "#fff",
                   fontSize: 14,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   cursor: "pointer",
                   marginBottom: 8,
+                  boxShadow: "0 4px 16px rgba(0,212,224,0.35)",
                 }}
               >
                 {t('login')}
@@ -962,17 +977,22 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         flexDirection: "column",
         alignItems: "center",
         padding: "20px 0",
-        background: "#fff",
+        background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
         minHeight: "100vh",
       }}>
         {/* Feed Header */}
         <div style={{ width: "100%", maxWidth: 600, padding: "0 20px", marginBottom: 20 }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: T.txt, marginBottom: activeTab === "explore" ? 16 : 0 }}>
-            {activeTab === "foryou" && "For You"}
-            {activeTab === "explore" && "Explore"}
-            {activeTab === "following" && "Following"}
-            {activeTab === "inbox" && "Messages"}
-            {activeTab === "bookmarks" && "Saved"}
+          <div style={{
+            fontSize: 28, fontWeight: 900, marginBottom: activeTab === "explore" ? 16 : 0,
+            background: "linear-gradient(135deg, #00D4E0, #FFFFFF 50%, #FFD700)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            backgroundClip: "text", letterSpacing: "-0.5px",
+          }}>
+            {activeTab === "foryou" && "✨ For You"}
+            {activeTab === "explore" && "🔍 Explore"}
+            {activeTab === "following" && "👥 Following"}
+            {activeTab === "inbox" && "💬 Messages"}
+            {activeTab === "bookmarks" && "🔖 Saved"}
           </div>
           
           {/* Search Bar - Only on Explore Tab */}
@@ -1013,16 +1033,18 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
           /* Videos Feed */
           <div style={{ width: "100%", maxWidth: 600, display: "flex", flexDirection: "column", gap: 20, padding: "0 20px" }}>
             {loading ? (
-              <div style={{ textAlign: "center", padding: "40px", color: T.sub }}>
+              <div style={{ textAlign: "center", padding: "60px", color: "#7ABFCC" }}>
                 Loading {activeTab === "following" ? "following" : activeTab === "bookmarks" ? "saved" : activeTab === "explore" ? "trending" : ""}...
               </div>
             ) : videos.length === 0 ? (
               <div style={{
-                background: T.cardBg,
-                borderRadius: 16,
+                background: "rgba(10,22,40,0.7)",
+                backdropFilter: "blur(20px)",
+                borderRadius: 20,
                 padding: 60,
                 textAlign: "center",
-                border: `1px solid ${T.border}`,
+                border: "1px solid rgba(0,212,224,0.2)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
               }}>
                 <div style={{ fontSize: 64, marginBottom: 20 }}>
                   {activeTab === "following" && "👥"}
@@ -1172,9 +1194,12 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                           position: "absolute",
                           top: 48,
                           right: 0,
-                          background: "#fff",
+                          background: "rgba(10,22,40,0.95)",
+                          backdropFilter: "blur(20px)",
+                          WebkitBackdropFilter: "blur(20px)",
+                          border: "1px solid rgba(0,212,224,0.2)",
                           borderRadius: 12,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
                           minWidth: 180,
                           overflow: "hidden",
                           zIndex: 100,
@@ -1569,14 +1594,14 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
       {/* RIGHT SIDEBAR - Recommendations - Hidden on mobile */}
       <div className="right-sidebar" style={{
         width: 320,
-        borderLeft: `1px solid ${T.border}`,
         padding: "20px",
         overflowY: "auto",
         position: "fixed",
         right: 0,
         top: 0,
         height: "100vh",
-        background: "#fff",
+        background: "linear-gradient(180deg, #060D1F 0%, #0A1628 100%)",
+        borderLeft: "1px solid rgba(0,212,224,0.15)",
         display: "none",
       }}>
         {/* User Suggestions */}
@@ -1648,7 +1673,9 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
         >
           <div
             style={{
-              background: "#fff",
+              background: "rgba(10,22,40,0.95)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(0,212,224,0.2)",
               borderRadius: 16,
               padding: "24px",
               maxWidth: 400,
@@ -1680,9 +1707,9 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                   width: "100%",
                   padding: "14px 16px",
                   marginBottom: 8,
-                  border: `1px solid ${T.border}`,
+                  border: "1px solid rgba(0,212,224,0.2)",
                   borderRadius: 8,
-                  background: "#fff",
+                  background: "rgba(0,212,224,0.08)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -1692,12 +1719,12 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
                   transition: "all 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#F5F5F4";
+                  e.currentTarget.style.background = "rgba(0,212,224,0.15)";
                   e.currentTarget.style.borderColor = T.pri;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#fff";
-                  e.currentTarget.style.borderColor = T.border;
+                  e.currentTarget.style.background = "rgba(0,212,224,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(0,212,224,0.2)";
                 }}
               >
                 <span style={{ fontSize: 20 }}>{category.icon}</span>

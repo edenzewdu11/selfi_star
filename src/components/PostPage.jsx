@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../api";
 
-const T = { pri:"#DA9B2A", txt:"#1C1917", sub:"#78716C", bg:"#FAFAF7", dark:"#0C1A12", border:"#E7E5E4" };
+const T = { pri:"#00D4E0", txt:"#FFFFFF", sub:"#7ABFCC", bg:"rgba(0,212,224,0.08)", dark:"#020810", border:"rgba(0,212,224,0.2)" };
 
 export function PostPage({ user, onBack }) {
   const [caption, setCaption] = useState("");
@@ -135,7 +135,7 @@ export function PostPage({ user, onBack }) {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "#fff",
+      background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
       zIndex: 4000,
       display: "flex",
       flexDirection: "column",
@@ -146,7 +146,10 @@ export function PostPage({ user, onBack }) {
         alignItems: "center",
         padding: "16px 20px",
         borderBottom: `1px solid ${T.border}`,
-        background: "#fff",
+        background: "rgba(6,13,31,0.95)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(0,212,224,0.15)",
       }}>
         <button
           onClick={onBack}
@@ -363,7 +366,10 @@ export function PostPage({ user, onBack }) {
           zIndex: 5000,
         }}>
           <div style={{
-            background: "#fff",
+            background: "rgba(10,22,40,0.95)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(0,212,224,0.2)",
             borderRadius: 16,
             padding: 32,
             maxWidth: 500,
@@ -409,7 +415,8 @@ export function PostPage({ user, onBack }) {
               </div>
               <div style={{
                 padding: 16,
-                background: "linear-gradient(135deg, #FFD700, #FFA500)",
+                background: `linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)`,
+                boxShadow: '0 4px 18px rgba(255,215,0,0.4)',
                 borderRadius: 12,
               }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#000", marginBottom: 4 }}>💎 Premium Plan</div>

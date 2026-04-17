@@ -5,7 +5,28 @@ from rest_framework import status
 from django.utils import timezone
 from django.db.models import Q, Count, Sum, Avg
 from django.contrib.auth.models import User
+from urllib.parse import unquote
 from .models_campaign import Campaign, CampaignEntry, CampaignVote, Reward, UserCoins, CoinTransaction, CoinPackage, UserSubscription
+
+
+def resolve_campaign_image(campaign, request):
+    """Resolve campaign image URL, handling broken URL-encoded external URLs."""
+    if not campaign.image:
+        return None
+    try:
+        raw_url = campaign.image.url  # e.g. /media/https%3A/picsum.photos/...
+        decoded = unquote(raw_url)     # e.g. /media/https:/picsum.photos/...
+        # Check if it's a mangled external URL
+        if '/media/http:/' in decoded or '/media/https:/' in decoded:
+            # Extract the original external URL
+            for prefix in ['/media/https:/', '/media/http:/']:
+                if decoded.startswith(prefix):
+                    scheme = 'https://' if 'https' in prefix else 'http://'
+                    return scheme + decoded[len(prefix):]
+            return None
+        return request.build_absolute_uri(raw_url)
+    except Exception:
+        return None
 from .serializers_campaign import (
     CampaignSerializer, CampaignCreateSerializer, CampaignEntrySerializer,
     CampaignVoteSerializer, RewardSerializer, UserCoinsSerializer,
@@ -222,10 +243,71 @@ def admin_grant_coins(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_campaigns(request):
-    """Get active campaigns for user participation"""
-    campaigns = Campaign.objects.filter(status='active').order_by('-created_at')
-    serializer = CampaignSerializer(campaigns, many=True)
-    return Response(serializer.data)
+    """Get campaigns for user participation - all types and statuses"""
+    from .campaign_engine import update_campaign_lifecycle, calculate_user_score
+
+    type_filter = request.GET.get('type', None)
+    status_filter = request.GET.get('status', None)
+
+    qs = Campaign.objects.exclude(status__in=['draft', 'cancelled']).order_by('-created_at')
+
+    # Auto-update lifecycle for grand campaigns
+    for c in qs:
+        update_campaign_lifecycle(c)
+
+    # Re-fetch after lifecycle updates
+    qs = Campaign.objects.exclude(status__in=['draft', 'cancelled']).order_by('-created_at')
+
+    if type_filter:
+        qs = qs.filter(campaign_type=type_filter)
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+
+    results = []
+    for c in qs:
+        image_url = resolve_campaign_image(c, request)
+
+        has_entered = CampaignEntry.objects.filter(campaign=c, user=request.user).exists()
+        my_score = 0
+        my_rank = None
+        if has_entered:
+            try:
+                my_score = calculate_user_score(c, request.user)
+                entry = CampaignEntry.objects.get(campaign=c, user=request.user)
+                my_rank = entry.rank
+            except Exception:
+                pass
+
+        results.append({
+            'id': c.id,
+            'title': c.title,
+            'description': c.description,
+            'campaign_type': c.campaign_type,
+            'status': c.status,
+            'image': image_url,
+            'start_date': c.start_date.isoformat() if c.start_date else None,
+            'end_date': c.end_date.isoformat() if c.end_date else None,
+            'voting_start_date': c.voting_start_date.isoformat() if c.voting_start_date else None,
+            'prize_title': c.prize_title,
+            'prize_value': str(c.prize_value),
+            'prize_description': c.prize_description,
+            'max_winners': c.max_winners,
+            'entries_count': c.entries.count(),
+            'total_votes': CampaignVote.objects.filter(entry__campaign=c).count(),
+            'has_entered': has_entered,
+            'my_score': my_score,
+            'my_rank': my_rank,
+            'official_hashtag': c.official_hashtag,
+            'min_followers': c.min_followers,
+            'max_entries_per_user': c.max_entries_per_user,
+            'daily_score_pct': c.daily_score_pct,
+            'daily_random_pct': c.daily_random_pct,
+            'judge_weight': c.judge_weight,
+            'public_vote_weight': c.public_vote_weight,
+            'is_active': c.is_active,
+        })
+
+    return Response(results)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -288,22 +370,42 @@ def user_vote_campaign(request, campaign_id, entry_id):
     try:
         campaign = Campaign.objects.get(id=campaign_id)
         entry = CampaignEntry.objects.get(id=entry_id, campaign=campaign)
-        
-        # Check if user already voted
-        if CampaignVote.objects.filter(campaign=campaign, entry=entry, user=request.user).exists():
-            return Response({'error': 'You have already voted for this entry'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+        # Only allow voting during voting phase for grand campaigns
+        if campaign.campaign_type == 'grand_finale' and campaign.status != 'voting':
+            return Response({'error': 'Voting is not open for this campaign'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if user already voted for this entry
+        if CampaignVote.objects.filter(entry=entry, user=request.user).exists():
+            # Toggle: remove vote
+            CampaignVote.objects.filter(entry=entry, user=request.user).delete()
+            entry.vote_count = max(0, entry.vote_count - 1)
+            entry.save(update_fields=['vote_count'])
+            return Response({'voted': False, 'vote_count': entry.vote_count})
+
         # Create vote
-        CampaignVote.objects.create(
-            campaign=campaign,
-            entry=entry,
-            user=request.user
-        )
-        
-        return Response({'message': 'Vote recorded successfully'})
-        
+        CampaignVote.objects.create(entry=entry, user=request.user)
+        entry.vote_count = entry.vote_count + 1
+        entry.save(update_fields=['vote_count'])
+
+        return Response({'voted': True, 'vote_count': entry.vote_count})
+
     except (Campaign.DoesNotExist, CampaignEntry.DoesNotExist):
         return Response({'error': 'Campaign or entry not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_campaign_leaderboard(request, campaign_id):
+    """Get leaderboard for a campaign"""
+    from .campaign_engine import get_leaderboard
+    try:
+        campaign = Campaign.objects.get(id=campaign_id)
+        leaderboard = get_leaderboard(campaign, limit=50)
+        return Response(leaderboard)
+    except Campaign.DoesNotExist:
+        return Response({'error': 'Campaign not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 # ============= COIN SYSTEM API =============
 

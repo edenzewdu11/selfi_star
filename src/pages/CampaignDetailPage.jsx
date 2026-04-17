@@ -142,11 +142,10 @@ export function CampaignDetailPage({ theme, campaignId, onBack }) {
     return (
       <div style={{
         minHeight: '100vh',
-        background: theme.bg,
+        background: 'linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: '240px',
       }}>
         <div style={{ color: theme.sub }}>Loading campaign...</div>
       </div>
@@ -192,7 +191,7 @@ export function CampaignDetailPage({ theme, campaignId, onBack }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: theme.bg,
+      background: 'linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)',
       paddingTop: 20,
       paddingBottom: 40,
       marginLeft: '240px',
@@ -1154,7 +1153,10 @@ function SubmitEntryModal({ theme, campaignId, onClose, onSuccess }) {
     >
       <div
         style={{
-          background: '#fff',
+          background: 'rgba(10,22,40,0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0,212,224,0.2)',
           borderRadius: 16,
           padding: 32,
           width: '100%',
@@ -1306,10 +1308,10 @@ function SubmitEntryModal({ theme, campaignId, onClose, onSuccess }) {
             style={{
               flex: 1,
               padding: 14,
-              background: '#fff',
-              border: `2px solid ${theme.border}`,
+              background: 'rgba(0,20,50,0.6)',
+              border: '2px solid rgba(0,212,224,0.2)',
               borderRadius: 8,
-              color: theme.txt,
+              color: '#FFFFFF',
               fontSize: 15,
               fontWeight: 600,
               cursor: 'pointer',

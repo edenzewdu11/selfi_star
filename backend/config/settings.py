@@ -11,6 +11,7 @@ RENDER_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME', default=None)
 ALLOWED_HOSTS = ['*'] if not RENDER_HOSTNAME else ['localhost', '127.0.0.1', RENDER_HOSTNAME]
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

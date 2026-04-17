@@ -354,16 +354,16 @@ export default function WerqRoot() {
       ) : showCampaignDetail ? (
         <CampaignDetailPage 
           theme={{
-            pri: "#DA9B2A",
-            txt: "#1C1917",
-            sub: "#78716C",
-            bg: "#FAFAF9",
+            pri: "#00D4E0",
+            txt: "#FFFFFF",
+            sub: "#7ABFCC",
+            bg: "#060D1F",
             card: "#FFFFFF",
             border: "#E7E5E4",
             blue: "#3B82F6",
             green: "#10B981",
             red: "#EF4444",
-            orange: "#F59E0B",
+            orange: "#F5A623",
             purple: "#8B5CF6",
           }}
           campaignId={campaignId}
@@ -375,16 +375,16 @@ export default function WerqRoot() {
       ) : showCampaigns ? (
         <CampaignsPage 
           theme={{
-            pri: "#DA9B2A",
-            txt: "#1C1917",
-            sub: "#78716C",
-            bg: "#FAFAF9",
+            pri: "#00D4E0",
+            txt: "#FFFFFF",
+            sub: "#7ABFCC",
+            bg: "#060D1F",
             card: "#FFFFFF",
             border: "#E7E5E4",
             blue: "#3B82F6",
             green: "#10B981",
             red: "#EF4444",
-            orange: "#F59E0B",
+            orange: "#F5A623",
             purple: "#8B5CF6",
           }}
           onCampaignClick={(id) => {

@@ -49,7 +49,7 @@ def reels_trending(request):
     reels = Reel.objects.filter(
         created_at__gte=week_ago
     ).annotate(
-        engagement=Count('vote') + Count('comment')
+        engagement=Count('reel_votes') + Count('comments')
     ).order_by('-engagement', '-created_at')[:50]
     
     # Serialize with user context if authenticated

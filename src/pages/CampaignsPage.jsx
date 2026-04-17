@@ -155,10 +155,10 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
         </div>
         
         <h1 style={{ 
-          margin: 0, 
+          marginTop: 0, marginLeft: 0, marginRight: 0,
           fontSize: isMobile ? 28 : 36, 
           fontWeight: 900, 
-          background: `linear-gradient(135deg, ${theme.pri}, ${theme.orange})`,
+          background: `linear-gradient(135deg, ${theme.pri}, ${theme.blue})`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -244,17 +244,20 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: 16,
           maxWidth: '1200px',
-          margin: '0 auto',
+          marginLeft: 'auto',
+          marginRight: 'auto',
           marginTop: '32px',
         }}>
           {[1, 2, 3].map(i => (
             <div
               key={i}
               style={{
-                background: '#fff',
+                background: 'rgba(10,22,40,0.8)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
                 borderRadius: 12,
                 overflow: 'hidden',
-                border: `1px solid ${theme.border}`,
+                border: '1px solid rgba(0,212,224,0.2)',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               }}
             >
@@ -304,7 +307,7 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
         }}>
           <Trophy size={isMobile ? 40 : 48} color={theme.sub} style={{ marginBottom: 16 }} />
           <h3 style={{
-            margin: 0,
+            marginTop: 0, marginLeft: 0, marginRight: 0,
             fontSize: isMobile ? 16 : 18,
             fontWeight: 600,
             color: theme.txt,
@@ -313,7 +316,7 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
             No {filter} campaigns
           </h3>
           <p style={{
-            margin: 0,
+            marginTop: 0, marginLeft: 0, marginRight: 0,
             fontSize: isMobile ? 13 : 14,
             color: theme.sub,
           }}>
@@ -326,7 +329,8 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: 16,
           maxWidth: '1200px',
-          margin: '0 auto',
+          marginLeft: 'auto',
+          marginRight: 'auto',
           marginTop: '32px',
         }}>
           {campaigns.map(campaign => {
@@ -336,10 +340,12 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
               <div
                 key={campaign.id}
                 style={{
-                  background: '#fff',
+                  background: 'rgba(10,22,40,0.8)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   borderRadius: isMobile ? 12 : 16,
                   overflow: 'hidden',
-                  border: `1px solid ${theme.border}`,
+                  border: '1px solid rgba(0,212,224,0.2)',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer',
@@ -397,7 +403,7 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
                 <div style={{ padding: isMobile ? 16 : 20 }}>
                   {/* Title */}
                   <h3 style={{
-                    margin: 0,
+                    marginTop: 0, marginLeft: 0, marginRight: 0,
                     fontSize: isMobile ? 16 : 18,
                     fontWeight: 800,
                     color: theme.txt,
@@ -413,7 +419,7 @@ export function CampaignsPage({ theme, onCampaignClick, onBack }) {
 
                   {/* Description */}
                   <p style={{
-                    margin: 0,
+                    marginTop: 0, marginLeft: 0, marginRight: 0,
                     fontSize: isMobile ? 12 : 13,
                     color: theme.sub,
                     marginBottom: 12,
