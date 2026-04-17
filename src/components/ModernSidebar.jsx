@@ -63,14 +63,14 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
             fontSize: 22,
             fontWeight: 900,
             letterSpacing: "1.5px",
-            background: "linear-gradient(135deg, #00D4E0, #ffffff 50%, #FFD700)",
+            background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
           }}>
             WorqPost
           </div>
-          <div style={{ fontSize: 10, color: "#7ABFCC", marginTop: 2, letterSpacing: "0.5px" }}>ወorqPost ✦</div>
+          <div style={{ fontSize: 10, color: "#9CA3AF", marginTop: 2, letterSpacing: "0.5px" }}>ወorqPost ✦</div>
         </div>
 
         {/* Menu Items */}
@@ -87,26 +87,26 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
                   alignItems: "center",
                   gap: 11,
                   padding: "11px 14px",
-                  border: isActive ? "1px solid rgba(0,212,224,0.3)" : "1px solid transparent",
-                  background: isActive ? "rgba(0,212,224,0.12)" : "transparent",
+                  border: "1px solid transparent",
+                  background: isActive ? "linear-gradient(135deg, #7C3AED, #4F46E5)" : "transparent",
                   borderRadius: 12,
                   cursor: "pointer",
                   transition: "all 0.2s",
                   textAlign: "left",
-                  boxShadow: isActive ? "0 0 12px rgba(0,212,224,0.15)" : "none",
+                  boxShadow: isActive ? "0 4px 14px rgba(124,58,237,0.35)" : "none",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) { e.currentTarget.style.background = "rgba(0,212,224,0.07)"; e.currentTarget.style.borderColor = "rgba(0,212,224,0.15)"; }
+                  if (!isActive) { e.currentTarget.style.background = "rgba(124,58,237,0.09)"; }
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
+                  if (!isActive) { e.currentTarget.style.background = "transparent"; }
                 }}
               >
-                <Icon size={19} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
-                <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? "#FFFFFF" : "#7ABFCC", letterSpacing: "0.2px" }}>
+                <Icon size={19} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#FFFFFF" : "#6B7280"} />
+                <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? "#FFFFFF" : "#374151", letterSpacing: "0.2px" }}>
                   {item.label}
                 </span>
-                {isActive && <div style={{ marginLeft:"auto", width:4, height:4, borderRadius:"50%", background:"#00D4E0", boxShadow:"0 0 6px #00D4E0" }} />}
+                {isActive && <div style={{ marginLeft:"auto", width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.7)" }} />}
               </button>
             );
           })}
@@ -114,16 +114,16 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
 
         {/* User Section */}
         {user && (
-          <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(0,212,224,0.15)", marginTop:"auto", flexShrink:0 }}>
+          <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(0,0,0,0.08)", marginTop:"auto", flexShrink:0 }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
               {user.profile_photo ? (
                 <img src={user.profile_photo.startsWith('http') ? user.profile_photo : `http://localhost:8000${user.profile_photo}`} alt="Profile" style={{ width:34, height:34, borderRadius:"50%", objectFit:"cover", border:"2px solid rgba(0,212,224,0.4)" }} />
               ) : (
-                <div style={{ width:34, height:34, borderRadius:"50%", background:"rgba(0,212,224,0.15)", border:"2px solid rgba(0,212,224,0.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>👤</div>
+                <div style={{ width:34, height:34, borderRadius:"50%", background:"rgba(124,58,237,0.12)", border:"2px solid rgba(124,58,237,0.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>👤</div>
               )}
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#FFFFFF", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{user.username}</div>
-                <div style={{ fontSize:10, color:"#7ABFCC" }}>@{user.username}</div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{user.username}</div>
+                <div style={{ fontSize:10, color:"#9CA3AF" }}>@{user.username}</div>
               </div>
             </div>
             <button onClick={onLogout} style={{ width:"100%", padding:"8px 10px", border:"1px solid rgba(255,75,110,0.3)", background:"rgba(255,75,110,0.08)", borderRadius:10, cursor:"pointer", fontSize:12, fontWeight:700, color:"#FF4B6E", transition:"all 0.2s" }}
@@ -154,30 +154,33 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
           {/* Mobile Sidebar */}
           <div style={{ width:280, height:"100vh", position:"fixed", left:0, top:0, background:"#FFFFFF", borderRight:"1px solid rgba(0,0,0,0.08)", display:"flex", flexDirection:"column", padding:"20px 12px", zIndex:201, boxShadow:"4px 0 20px rgba(0,0,0,0.08)" }}
             className="mobile-sidebar" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setIsMobileMenuOpen(false)} style={{ position:"absolute", top:16, right:12, width:32, height:32, border:"1px solid rgba(0,212,224,0.2)", background:"rgba(0,212,224,0.1)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:8, color:"#00D4E0" }}>
+            <button onClick={() => setIsMobileMenuOpen(false)} style={{ position:"absolute", top:16, right:12, width:32, height:32, border:"1px solid rgba(0,0,0,0.1)", background:"rgba(0,0,0,0.05)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:8, color:"#374151" }}>
               <X size={18} />
             </button>
             <div style={{ padding:"10px 14px", marginBottom:20 }}>
-              <div style={{ fontSize:22, fontWeight:900, letterSpacing:"1.5px", background:"linear-gradient(135deg, #00D4E0, #ffffff 50%, #FFD700)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>WorqPost</div>
-              <div style={{ fontSize:10, color:"#7ABFCC", marginTop:2 }}>ወorqPost ✦</div>
+              <div style={{ fontSize:22, fontWeight:900, letterSpacing:"1.5px", background:"linear-gradient(135deg, #7C3AED, #4F46E5)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>WorqPost</div>
+              <div style={{ fontSize:10, color:"#9CA3AF", marginTop:2 }}>ወorqPost ✦</div>
             </div>
             <nav style={{ flex:1, display:"flex", flexDirection:"column", gap:3, overflowY:"auto" }}>
               {menuItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 return (
-                  <button key={item.id} onClick={() => handleItemClick(item.id)} style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 14px", border: isActive ? "1px solid rgba(0,212,224,0.3)" : "1px solid transparent", background: isActive ? "rgba(0,212,224,0.12)" : "transparent", borderRadius:12, cursor:"pointer", transition:"all 0.2s", textAlign:"left" }}>
-                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
-                    <span style={{ fontSize:15, fontWeight: isActive ? 700 : 500, color: isActive ? "#FFFFFF" : "#7ABFCC" }}>{item.label}</span>
+                  <button key={item.id} onClick={() => handleItemClick(item.id)}
+                    onMouseEnter={e => { if(!isActive) e.currentTarget.style.background="rgba(124,58,237,0.09)"; }}
+                    onMouseLeave={e => { if(!isActive) e.currentTarget.style.background="transparent"; }}
+                    style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 14px", border:"1px solid transparent", background: isActive ? "linear-gradient(135deg, #7C3AED, #4F46E5)" : "transparent", borderRadius:12, cursor:"pointer", transition:"all 0.2s", textAlign:"left", boxShadow: isActive ? "0 4px 14px rgba(124,58,237,0.3)" : "none" }}>
+                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#FFFFFF" : "#6B7280"} />
+                    <span style={{ fontSize:15, fontWeight: isActive ? 700 : 500, color: isActive ? "#FFFFFF" : "#374151" }}>{item.label}</span>
                   </button>
                 );
               })}
             </nav>
             {user && (
-              <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(0,212,224,0.15)", marginTop:"auto", flexShrink:0 }}>
+              <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(0,0,0,0.08)", marginTop:"auto", flexShrink:0 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
-                  <div style={{ width:38, height:38, borderRadius:"50%", background:"rgba(0,212,224,0.15)", border:"2px solid rgba(0,212,224,0.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>👤</div>
-                  <div><div style={{ fontSize:13, fontWeight:700, color:"#FFFFFF" }}>{user.username}</div><div style={{ fontSize:11, color:"#7ABFCC" }}>@{user.username}</div></div>
+                  <div style={{ width:38, height:38, borderRadius:"50%", background:"rgba(124,58,237,0.12)", border:"2px solid rgba(124,58,237,0.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>👤</div>
+                  <div><div style={{ fontSize:13, fontWeight:700, color:"#111827" }}>{user.username}</div><div style={{ fontSize:11, color:"#9CA3AF" }}>@{user.username}</div></div>
                 </div>
                 <button onClick={onLogout} style={{ width:"100%", padding:"9px 10px", border:"1px solid rgba(255,75,110,0.3)", background:"rgba(255,75,110,0.08)", borderRadius:10, cursor:"pointer", fontSize:13, fontWeight:700, color:"#FF4B6E" }}>{t('logout')}</button>
               </div>
