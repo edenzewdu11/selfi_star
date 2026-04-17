@@ -84,10 +84,9 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
   };
 
   return (
-    <div style={{
+    <div className="home-page-root" style={{
       minHeight: "100vh",
       background: "linear-gradient(160deg, #060D1F 0%, #0A1628 60%, #0D1E3A 100%)",
-      paddingLeft: 220,
       boxSizing: "border-box",
     }}>
       {/* Sponsor Header */}
@@ -151,7 +150,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
       </div>
 
       {/* Main content */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px 80px" }}>
+      <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 16px 80px", width: "100%" }}>
 
         {/* Tab Navigation */}
         <div style={{
@@ -477,10 +476,10 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns }
         )}
       </div>
 
-      {/* Mobile responsive */}
       <style>{`
+        .home-page-root { padding-left: 220px; }
         @media (max-width: 768px) {
-          .home-page-inner { padding-left: 0 !important; }
+          .home-page-root { padding-left: 0 !important; padding-bottom: 80px; }
         }
       `}</style>
     </div>
