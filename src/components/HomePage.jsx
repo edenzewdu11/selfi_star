@@ -241,9 +241,14 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns, 
               const username = post.user?.username || "user";
               const isVerified = post.user?.profile?.is_verified || false;
               const caption = post.caption || "";
-              const hashtags = post.hashtags_list && post.hashtags_list.length > 0
-                ? post.hashtags_list.map(t => t.startsWith("#") ? t : `#${t}`)
-                : post.hashtags ? post.hashtags.split(/[,\s]+/).filter(Boolean).map(t => t.startsWith("#") ? t : `#${t}`) : [];
+              const rawTags = post.hashtags_list && post.hashtags_list.length > 0
+                ? post.hashtags_list
+                : post.hashtags ? post.hashtags.split(/[,\s]+/).filter(Boolean) : [];
+              const hashtags = [...new Set(
+                rawTags.flatMap(t => t.split(/[\s,]+/).filter(Boolean))
+                       .map(t => t.startsWith("#") ? t : `#${t}`)
+                       .filter(t => t.length > 1)
+              )];
 
               return (
                 <div

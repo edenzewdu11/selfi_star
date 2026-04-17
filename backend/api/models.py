@@ -40,8 +40,10 @@ class Reel(models.Model):
         return f"Reel by {self.user.username}"
     
     def get_hashtags_list(self):
+        import re
         if self.hashtags:
-            return [tag.strip() for tag in self.hashtags.split(',') if tag.strip()]
+            tags = re.split(r'[,\s]+', self.hashtags.strip())
+            return [t if t.startswith('#') else f'#{t}' for t in tags if t]
         return []
 
 class Comment(models.Model):
