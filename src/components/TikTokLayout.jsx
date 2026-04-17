@@ -703,16 +703,16 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
           100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
         }
 
-        /* Desktop styles */
+        /* Desktop styles - ModernSidebar (220px) handles left nav, hide TikTok's own sidebar */
         @media (min-width: 769px) {
           .desktop-tiktok-sidebar {
-            display: flex !important;
+            display: none !important;
           }
           .right-sidebar {
             display: block !important;
           }
           .video-feed {
-            margin-left: 250px !important;
+            margin-left: 220px !important;
             margin-right: 320px !important;
           }
         }
