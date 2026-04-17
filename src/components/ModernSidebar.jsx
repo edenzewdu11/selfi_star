@@ -197,7 +197,11 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
         padding: "0 8px", zIndex: 100,
         boxShadow: "0 -4px 20px rgba(0,0,0,0.4)",
       }} className="mobile-nav">
-        {[menuItems[0], menuItems[1], menuItems[6], menuItems[4], menuItems[7]].map(item => {
+        {/* Home */}
+        {[
+          { id: "home", icon: Home, label: "Home" },
+          { id: "reels", icon: Film, label: "Reels" },
+        ].map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
@@ -208,9 +212,46 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
             }}>
               {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #00D4E0, #0891B2)", borderRadius:2 }} />}
               <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
-              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#00D4E0" : "#7ABFCC", letterSpacing:"0.3px" }}>
-                {item.label}
-              </span>
+              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#00D4E0" : "#7ABFCC", letterSpacing:"0.3px" }}>{item.label}</span>
+            </button>
+          );
+        })}
+
+        {/* Center Create Button */}
+        <button onClick={() => handleItemClick("create")} style={{
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+          border:"none", background:"transparent", cursor:"pointer", padding:"0 6px", flex:1,
+          position:"relative",
+        }}>
+          <div style={{
+            width: 46, height: 46,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #FFD700 0%, #F5A623 60%, #E08B00 100%)",
+            boxShadow: "0 4px 16px rgba(255,215,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            marginBottom: 2,
+          }}>
+            <PlusSquare size={22} color="#0A1628" strokeWidth={2.5} />
+          </div>
+          <span style={{ fontSize:9, fontWeight:700, color:"#FFD700", letterSpacing:"0.3px" }}>Create</span>
+        </button>
+
+        {/* Messages + Profile */}
+        {[
+          { id: "messages", icon: MessageCircle, label: "Messages" },
+          { id: "profile", icon: User, label: "Profile" },
+        ].map(item => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button key={item.id} onClick={() => handleItemClick(item.id)} style={{
+              display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+              border:"none", background:"transparent", cursor:"pointer", padding:6, flex:1,
+              position:"relative",
+            }}>
+              {isActive && <div style={{ position:"absolute", top:-1, left:"50%", transform:"translateX(-50%)", width:24, height:2, background:"linear-gradient(90deg, #00D4E0, #0891B2)", borderRadius:2 }} />}
+              <Icon size={21} strokeWidth={isActive ? 2.5 : 2} color={isActive ? "#00D4E0" : "#7ABFCC"} />
+              <span style={{ fontSize:9, fontWeight: isActive ? 700 : 500, color: isActive ? "#00D4E0" : "#7ABFCC", letterSpacing:"0.3px" }}>{item.label}</span>
             </button>
           );
         })}
