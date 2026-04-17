@@ -19,10 +19,9 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
   // Map external tab names to internal tab names
   const mapTabName = (tab) => {
     const tabMap = {
-      'home': 'foryou',
+      'reels': 'foryou',
       'search': 'search',
       'explore': 'explore',
-      'reels': 'foryou',
       'messages': 'inbox',
       'notifications': 'notifications',
       'following': 'following',

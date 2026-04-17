@@ -9,7 +9,8 @@ export function ModernSidebar({ user, activeTab, onTabChange, onShowPostPage, on
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const menuItems = [
-    { id: "home", icon: Home, label: t('home') },
+    { id: "home", icon: Home, label: "Home" },
+    { id: "reels", icon: Film, label: "Reels" },
     { id: "explore", icon: Compass, label: t('explore') },
     { id: "messages", icon: MessageCircle, label: t('messages') },
     { id: "notifications", icon: Bell, label: t('notifications') },

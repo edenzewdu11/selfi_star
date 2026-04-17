@@ -3,6 +3,7 @@ import { ModernLoginScreen } from "./components/ModernLoginScreen";
 import { ModernRegisterScreen } from "./components/ModernRegisterScreen";
 import { LandingPage } from "./components/LandingPage";
 import { TikTokLayout } from './components/TikTokLayout'
+import { HomePage } from './components/HomePage'
 import { EnhancedPostPage } from "./components/EnhancedPostPage";
 import { ModernSidebar } from './components/ModernSidebar'
 import { ProfilePage } from './components/ProfilePage'
@@ -393,6 +394,13 @@ export default function WerqRoot() {
             setShowCampaignDetail(true);
           }}
           onBack={() => setShowCampaigns(false)}
+        />
+      ) : activeTab === 'home' && !showPostPage && !showProfile && !showSettings && !showNotifications && !showMessages && !showCampaigns && !showCampaignDetail && !showEditProfile && !showFollowersList && screen !== 'landing' ? (
+        <HomePage
+          user={authUser}
+          onShowProfile={handleShowProfile}
+          onRequireAuth={handleRequireAuth}
+          onShowCampaigns={handleShowCampaigns}
         />
       ) : showPostPage ? (
         <EnhancedPostPage user={authUser} onBack={() => setShowPostPage(false)} />
