@@ -12,7 +12,7 @@ import { getRelativeTime } from "../utils/timeUtils";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequireAuth, onShowPostPage, onShowProfile, onShowSettings, onShowCampaigns, onShowNotifications }) {
+export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequireAuth, onShowPostPage, onShowProfile, onShowSettings, onShowCampaigns, onShowNotifications, initialVideoId }) {
   const { colors: T } = useTheme();
   const { t } = useLanguage();
   
@@ -175,7 +175,19 @@ export function TikTokLayout({ user, activeTab: propActiveTab, onLogout, onRequi
       });
       console.log("🎯 Formatted videos:", formattedVideos);
       console.log("🎯 Setting videos state with", formattedVideos.length, "items");
-      setVideos(formattedVideos);
+      // Filter: only videos, no images
+      const videosOnly = formattedVideos.filter(v => v.isVideo);
+
+      // If initialVideoId is set, put that video first
+      let orderedVideos = videosOnly;
+      if (initialVideoId) {
+        const idx = videosOnly.findIndex(v => v.id === initialVideoId);
+        if (idx > 0) {
+          orderedVideos = [videosOnly[idx], ...videosOnly.slice(0, idx), ...videosOnly.slice(idx + 1)];
+        }
+      }
+
+      setVideos(orderedVideos);
       // Update following status after mapping (outside map to avoid re-renders)
       const followingMap = {};
       reelsList.forEach(reel => {

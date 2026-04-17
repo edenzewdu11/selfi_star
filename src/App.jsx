@@ -43,6 +43,7 @@ export default function WerqRoot() {
   const [showCampaigns, setShowCampaigns] = useState(false)
   const [showCampaignDetail, setShowCampaignDetail] = useState(false)
   const [campaignId, setCampaignId] = useState(null)
+  const [reelsStartId, setReelsStartId] = useState(null)
   const [, startTransition] = useTransition()
 
   // Function to reset all special page states
@@ -411,7 +412,7 @@ export default function WerqRoot() {
           onShowProfile={handleShowProfile}
           onRequireAuth={handleRequireAuth}
           onShowCampaigns={handleShowCampaigns}
-          onSwitchToReels={() => startTransition(() => { resetAllPages(); setActiveTab('reels'); })}
+          onSwitchToReels={(videoId) => startTransition(() => { resetAllPages(); setReelsStartId(videoId || null); setActiveTab('reels'); })}
         />
       ) : showPostPage ? (
         <EnhancedPostPage user={authUser} onBack={() => setShowPostPage(false)} />
@@ -432,6 +433,7 @@ export default function WerqRoot() {
           onShowSettings={handleShowSettings}
           onShowCampaigns={handleShowCampaigns}
           onShowNotifications={handleShowNotifications}
+          initialVideoId={reelsStartId}
         />
       )}
       {showLogin && (

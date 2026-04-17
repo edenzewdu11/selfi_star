@@ -350,7 +350,7 @@ export function HomePage({ user, onShowProfile, onRequireAuth, onShowCampaigns, 
                   {mediaUrl && (
                     <div
                       style={{ position: "relative", width: "100%", paddingTop: "100%", background: "#F3F4F6", cursor: isVideo(mediaUrl) ? "pointer" : "default" }}
-                      onClick={() => isVideo(mediaUrl) && onSwitchToReels?.()}
+                      onClick={() => isVideo(mediaUrl) && onSwitchToReels?.(post.id)}
                     >
                       {isVideo(mediaUrl) ? (
                         <>
